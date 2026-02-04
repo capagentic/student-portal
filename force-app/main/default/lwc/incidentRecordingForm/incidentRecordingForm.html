@@ -1,0 +1,669 @@
+<template>
+    <div class="incident-form-container">
+        <!-- Form Header -->
+        <header class="form-header">
+            <div class="header-content">
+                <lightning-icon icon-name="utility:record" size="large" class="form-icon"></lightning-icon>
+                <div class="header-text">
+                    <h1 class="form-title">Record New Incident</h1>
+                    <p class="form-subtitle">Student Behaviour Management System</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <lightning-button
+                    label="Save as Draft"
+                    variant="outline-brand"
+                    icon-name="utility:save"
+                    onclick={handleSaveDraft}
+                    disabled={isLoading}
+                    class="draft-btn">
+                </lightning-button>
+                <lightning-button
+                    label="Cancel"
+                    variant="neutral"
+                    icon-name="utility:close"
+                    onclick={handleCancel}
+                    class="cancel-btn">
+                </lightning-button>
+            </div>
+        </header>
+
+        <!-- Progress Indicator -->
+        <div class="progress-section">
+            <lightning-progress-indicator
+                current-step={currentStep}
+                type="path"
+                variant="base"
+                class="form-progress">
+                <lightning-progress-step
+                    label="Student & Details"
+                    value="step1">
+                </lightning-progress-step>
+                <lightning-progress-step
+                    label="Incident Description"
+                    value="step2">
+                </lightning-progress-step>
+                <lightning-progress-step
+                    label="Participants"
+                    value="step3">
+                </lightning-progress-step>
+                <lightning-progress-step
+                    label="Response & Actions"
+                    value="step4">
+                </lightning-progress-step>
+                <lightning-progress-step
+                    label="Follow-up"
+                    value="step5">
+                </lightning-progress-Step>
+                <lightning-progress-step
+                    label="Review & Submit"
+                    value="step6">
+                </lightning-progress-step>
+            </lightning-progress-indicator>
+        </div>
+
+        <!-- Auto-save Indicator -->
+        <div class="autosave-indicator" lwc:if={showAutoSaveIndicator}>
+            <lightning-icon icon-name="utility:success" size="x-small" class="autosave-icon"></lightning-icon>
+            <span class="autosave-text">Draft saved automatically</span>
+        </div>
+
+        <!-- Main Form Content -->
+        <div class="form-content">
+            <!-- Step 1: Student Selection and Basic Details -->
+            <div class="form-step" lwc:if={isStep1} data-step="1">
+                <lightning-card title="Step 1: Student & Incident Details" class="step-card">
+                    <div class="step-content">
+                        <div class="form-row">
+                            <div class="form-column">
+                                <lightning-record-picker
+                                    label="Select Student"
+                                    placeholder="Search for student..."
+                                    object-api-name="Contact"
+                                    field-level-help="Search and select the student involved in this incident"
+                                    value={formData.studentId}
+                                    onchange={handleStudentChange}
+                                    required>
+                                </lightning-record-picker>
+                            </div>
+                            <div class="form-column" lwc:if={selectedStudentInfo}>
+                                <div class="student-info-card">
+                                    <h4 class="student-name">{selectedStudentInfo.name}</h4>
+                                    <p class="student-details">Grade: {selectedStudentInfo.grade} | ID: {selectedStudentInfo.studentId}</p>
+                                    <p class="student-alerts" lwc:if={selectedStudentInfo.hasAlerts}>
+                                        <lightning-icon icon-name="utility:warning" size="small" class="alert-icon"></lightning-icon>
+                                        Active alerts on file
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-column">
+                                <lightning-input
+                                    type="datetime-local"
+                                    label="Incident Date & Time"
+                                    value={formData.incidentDateTime}
+                                    onchange={handleFieldChange}
+                                    data-field="incidentDateTime"
+                                    required
+                                    max={currentDateTime}>
+                                </lightning-input>
+                            </div>
+                            <div class="form-column">
+                                <lightning-combobox
+                                    label="Location"
+                                    value={formData.location}
+                                    placeholder="Select incident location"
+                                    options={locationOptions}
+                                    onchange={handleFieldChange}
+                                    data-field="location"
+                                    required>
+                                </lightning-combobox>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-column">
+                                <lightning-combobox
+                                    label="Incident Classification"
+                                    value={formData.incidentType}
+                                    placeholder="Select incident type"
+                                    options={incidentTypeOptions}
+                                    onchange={handleFieldChange}
+                                    data-field="incidentType"
+                                    required>
+                                </lightning-combobox>
+                            </div>
+                            <div class="form-column">
+                                <lightning-combobox
+                                    label="Severity Level"
+                                    value={formData.severityLevel}
+                                    placeholder="Select severity"
+                                    options={severityOptions}
+                                    onchange={handleFieldChange}
+                                    data-field="severityLevel"
+                                    required>
+                                </lightning-combobox>
+                            </div>
+                        </div>
+                    </div>
+                </lightning-card>
+            </div>
+
+            <!-- Step 2: Incident Description -->
+            <div class="form-step" lwc:if={isStep2} data-step="2">
+                <lightning-card title="Step 2: Detailed Incident Description" class="step-card">
+                    <div class="step-content">
+                        <lightning-textarea
+                            label="Incident Description"
+                            value={formData.incidentDescription}
+                            placeholder="Provide a detailed, objective description of what occurred..."
+                            onchange={handleFieldChange}
+                            data-field="incidentDescription"
+                            max-length="2000"
+                            field-level-help="Be specific and objective. Include what you observed directly."
+                            required
+                            class="full-width">
+                        </lightning-textarea>
+
+                        <div class="form-row">
+                            <div class="form-column">
+                                <lightning-textarea
+                                    label="Antecedents (What led to the incident?)"
+                                    value={formData.antecedents}
+                                    placeholder="Describe what happened before the incident..."
+                                    onchange={handleFieldChange}
+                                    data-field="antecedents"
+                                    max-length="1000"
+                                    class="description-field">
+                                </lightning-textarea>
+                            </div>
+                            <div class="form-column">
+                                <lightning-textarea
+                                    label="Observed Behaviours"
+                                    value={formData.observedBehaviours}
+                                    placeholder="Describe specific behaviours observed..."
+                                    onchange={handleFieldChange}
+                                    data-field="observedBehaviours"
+                                    max-length="1000"
+                                    class="description-field">
+                                </lightning-textarea>
+                            </div>
+                        </div>
+
+                        <lightning-checkbox-group
+                            label="Environmental Factors"
+                            options={environmentalFactorOptions}
+                            value={formData.environmentalFactors}
+                            onchange={handleFieldChange}
+                            data-field="environmentalFactors"
+                            class="full-width">
+                        </lightning-checkbox-group>
+
+                        <lightning-textarea
+                            label="Additional Environmental Context"
+                            value={formData.environmentalContext}
+                            placeholder="Any additional environmental factors or context..."
+                            onchange={handleFieldChange}
+                            data-field="environmentalContext"
+                            max-length="500"
+                            class="full-width">
+                        </lightning-textarea>
+                    </div>
+                </lightning-card>
+            </div>
+
+            <!-- Step 3: Participants and Witnesses -->
+            <div class="form-step" lwc:if={isStep3} data-step="3">
+                <lightning-card title="Step 3: Participants & Witnesses" class="step-card">
+                    <div class="step-content">
+                        <div class="participants-section">
+                            <h4 class="section-title">Other Students Involved</h4>
+                            <lightning-record-picker
+                                label="Add Student"
+                                placeholder="Search for additional students..."
+                                object-api-name="Contact"
+                                onchange={handleAddStudent}
+                                class="add-participant">
+                            </lightning-record-picker>
+
+                            <div class="participants-list" lwc:if={hasOtherStudents}>
+                                <template for:each={formData.otherStudents} for:item="student">
+                                    <div key={student.id} class="participant-item">
+                                        <div class="participant-info">
+                                            <span class="participant-name">{student.name}</span>
+                                            <span class="participant-role">{student.role}</span>
+                                        </div>
+                                        <lightning-button-icon
+                                            icon-name="utility:delete"
+                                            alternative-text="Remove student"
+                                            onclick={handleRemoveStudent}
+                                            data-student-id={student.id}
+                                            size="small">
+                                        </lightning-button-icon>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <div class="staff-section">
+                            <h4 class="section-title">Staff Members Present</h4>
+                            <lightning-record-picker
+                                label="Add Staff Member"
+                                placeholder="Search for staff members..."
+                                object-api-name="User"
+                                onchange={handleAddStaff}
+                                class="add-participant">
+                            </lightning-record-picker>
+
+                            <div class="participants-list" lwc:if={hasStaffMembers}>
+                                <template for:each={formData.staffMembers} for:item="staff">
+                                    <div key={staff.id} class="participant-item">
+                                        <div class="participant-info">
+                                            <span class="participant-name">{staff.name}</span>
+                                            <span class="participant-role">{staff.title}</span>
+                                        </div>
+                                        <lightning-button-icon
+                                            icon-name="utility:delete"
+                                            alternative-text="Remove staff member"
+                                            onclick={handleRemoveStaff}
+                                            data-staff-id={staff.id}
+                                            size="small">
+                                        </lightning-button-icon>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <div class="witnesses-section">
+                            <h4 class="section-title">Witnesses</h4>
+                            <lightning-textarea
+                                label="Witness Information"
+                                value={formData.witnesses}
+                                placeholder="List any witnesses (students, staff, visitors) and their observations..."
+                                onchange={handleFieldChange}
+                                data-field="witnesses"
+                                max-length="1000"
+                                class="full-width">
+                            </lightning-textarea>
+                        </div>
+
+                        <div class="notification-section">
+                            <h4 class="section-title">Parent/Guardian Notifications</h4>
+                            <lightning-checkbox
+                                label="Parents/Guardians have been notified"
+                                checked={formData.parentsNotified}
+                                onchange={handleFieldChange}
+                                data-field="parentsNotified">
+                            </lightning-checkbox>
+
+                            <template lwc:if={formData.parentsNotified}>
+                                <div class="notification-details">
+                                    <div class="form-row">
+                                        <div class="form-column">
+                                            <lightning-input
+                                                type="datetime-local"
+                                                label="Notification Date & Time"
+                                                value={formData.notificationDateTime}
+                                                onchange={handleFieldChange}
+                                                data-field="notificationDateTime">
+                                            </lightning-input>
+                                        </div>
+                                        <div class="form-column">
+                                            <lightning-combobox
+                                                label="Notification Method"
+                                                value={formData.notificationMethod}
+                                                options={notificationMethodOptions}
+                                                onchange={handleFieldChange}
+                                                data-field="notificationMethod">
+                                            </lightning-combobox>
+                                        </div>
+                                    </div>
+                                    <lightning-textarea
+                                        label="Notification Notes"
+                                        value={formData.notificationNotes}
+                                        placeholder="Note any parent/guardian responses or follow-up required..."
+                                        onchange={handleFieldChange}
+                                        data-field="notificationNotes"
+                                        max-length="500"
+                                        class="full-width">
+                                    </lightning-textarea>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </lightning-card>
+            </div>
+
+            <!-- Step 4: Response and Actions -->
+            <div class="form-step" lwc:if={isStep4} data-step="4">
+                <lightning-card title="Step 4: Immediate Response & Actions Taken" class="step-card">
+                    <div class="step-content">
+                        <lightning-textarea
+                            label="Immediate Response"
+                            value={formData.immediateResponse}
+                            placeholder="Describe the immediate actions taken to address the situation..."
+                            onchange={handleFieldChange}
+                            data-field="immediateResponse"
+                            max-length="1000"
+                            required
+                            class="full-width">
+                        </lightning-textarea>
+
+                        <div class="form-row">
+                            <div class="form-column">
+                                <lightning-checkbox-group
+                                    label="Interventions Applied"
+                                    options={interventionOptions}
+                                    value={formData.interventions}
+                                    onchange={handleFieldChange}
+                                    data-field="interventions">
+                                </lightning-checkbox-group>
+                            </div>
+                            <div class="form-column">
+                                <lightning-checkbox-group
+                                    label="Consequences Administered"
+                                    options={consequenceOptions}
+                                    value={formData.consequences}
+                                    onchange={handleFieldChange}
+                                    data-field="consequences">
+                                </lightning-checkbox-group>
+                            </div>
+                        </div>
+
+                        <lightning-textarea
+                            label="Additional Intervention Details"
+                            value={formData.interventionDetails}
+                            placeholder="Provide details about specific interventions or consequences applied..."
+                            onchange={handleFieldChange}
+                            data-field="interventionDetails"
+                            max-length="1000"
+                            class="full-width">
+                        </lightning-textarea>
+
+                        <div class="safety-section">
+                            <h4 class="section-title">Safety Measures</h4>
+                            <lightning-checkbox-group
+                                label="Safety Measures Implemented"
+                                options={safetyMeasureOptions}
+                                value={formData.safetyMeasures}
+                                onchange={handleFieldChange}
+                                data-field="safetyMeasures">
+                            </lightning-checkbox-group>
+
+                            <lightning-textarea
+                                label="Safety Notes"
+                                value={formData.safetyNotes}
+                                placeholder="Detail any safety concerns or protective measures taken..."
+                                onchange={handleFieldChange}
+                                data-field="safetyNotes"
+                                max-length="500"
+                                class="full-width">
+                            </lightning-textarea>
+                        </div>
+                    </div>
+                </lightning-card>
+            </div>
+
+            <!-- Step 5: Follow-up Actions -->
+            <div class="form-step" lwc:if={isStep5} data-step="5">
+                <lightning-card title="Step 5: Follow-up Actions & Tasks" class="step-card">
+                    <div class="step-content">
+                        <div class="followup-actions">
+                            <h4 class="section-title">Required Follow-up Actions</h4>
+                            <lightning-checkbox-group
+                                label="Follow-up Required"
+                                options={followupActionOptions}
+                                value={formData.followupActions}
+                                onchange={handleFieldChange}
+                                data-field="followupActions">
+                            </lightning-checkbox-group>
+
+                            <template lwc:if={hasFollowupActions}>
+                                <div class="followup-details">
+                                    <lightning-textarea
+                                        label="Follow-up Action Details"
+                                        value={formData.followupDetails}
+                                        placeholder="Specify details for required follow-up actions..."
+                                        onchange={handleFieldChange}
+                                        data-field="followupDetails"
+                                        max-length="1000"
+                                        class="full-width">
+                                    </lightning-textarea>
+
+                                    <div class="form-row">
+                                        <div class="form-column">
+                                            <lightning-input
+                                                type="date"
+                                                label="Follow-up Due Date"
+                                                value={formData.followupDueDate}
+                                                onchange={handleFieldChange}
+                                                data-field="followupDueDate"
+                                                min={currentDate}>
+                                            </lightning-input>
+                                        </div>
+                                        <div class="form-column">
+                                            <lightning-record-picker
+                                                label="Assign To"
+                                                placeholder="Select staff member..."
+                                                object-api-name="User"
+                                                value={formData.assignedTo}
+                                                onchange={handleFieldChange}
+                                                data-field="assignedTo">
+                                            </lightning-record-picker>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+
+                        <div class="escalation-section">
+                            <h4 class="section-title">Escalation</h4>
+                            <lightning-combobox
+                                label="Escalation Level"
+                                value={formData.escalationLevel}
+                                placeholder="Select escalation level"
+                                options={escalationOptions}
+                                onchange={handleFieldChange}
+                                data-field="escalationLevel">
+                            </lightning-combobox>
+
+                            <template lwc:if={requiresEscalation}>
+                                <lightning-textarea
+                                    label="Escalation Justification"
+                                    value={formData.escalationJustification}
+                                    placeholder="Explain why this incident requires escalation..."
+                                    onchange={handleFieldChange}
+                                    data-field="escalationJustification"
+                                    max-length="500"
+                                    required
+                                    class="full-width">
+                                </lightning-textarea>
+                            </template>
+                        </div>
+
+                        <div class="attachments-section">
+                            <h4 class="section-title">Document Attachments</h4>
+                            <lightning-file-upload
+                                label="Attach Supporting Documents"
+                                name="incidentDocuments"
+                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                record-id={recordId}
+                                onuploadfinished={handleUploadFinished}
+                                multiple>
+                            </lightning-file-upload>
+
+                            <div class="uploaded-files" lwc:if={hasUploadedFiles}>
+                                <h5>Uploaded Files:</h5>
+                                <template for:each={uploadedFiles} for:item="file">
+                                    <div key={file.documentId} class="file-item">
+                                        <lightning-icon icon-name="utility:attach" size="small"></lightning-icon>
+                                        <span class="file-name">{file.name}</span>
+                                        <lightning-button-icon
+                                            icon-name="utility:delete"
+                                            alternative-text="Remove file"
+                                            onclick={handleRemoveFile}
+                                            data-file-id={file.documentId}
+                                            size="small">
+                                        </lightning-button-icon>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </lightning-card>
+            </div>
+
+            <!-- Step 6: Review and Submit -->
+            <div class="form-step" lwc:if={isStep6} data-step="6">
+                <lightning-card title="Step 6: Review & Submit" class="step-card">
+                    <div class="step-content">
+                        <div class="review-summary">
+                            <h4 class="section-title">Incident Summary</h4>
+                            <div class="summary-grid">
+                                <div class="summary-item">
+                                    <span class="summary-label">Student:</span>
+                                    <span class="summary-value">{selectedStudentInfo.name}</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Date & Time:</span>
+                                    <span class="summary-value">{formattedDateTime}</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Location:</span>
+                                    <span class="summary-value">{formData.location}</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Type:</span>
+                                    <span class="summary-value">{formData.incidentType}</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Severity:</span>
+                                    <span class="summary-value" data-severity={formData.severityLevel}>{formData.severityLevel}</span>
+                                </div>
+                                <div class="summary-item">
+                                    <span class="summary-label">Escalation:</span>
+                                    <span class="summary-value">{formData.escalationLevel}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="approval-workflow" lwc:if={requiresApproval}>
+                            <h4 class="section-title">Approval Required</h4>
+                            <div class="approval-info">
+                                <lightning-icon icon-name="utility:warning" size="small" class="approval-icon"></lightning-icon>
+                                <p>This incident requires supervisory approval before submission.</p>
+                            </div>
+                            <lightning-record-picker
+                                label="Select Approver"
+                                placeholder="Choose supervisor for approval..."
+                                object-api-name="User"
+                                value={formData.approverId}
+                                onchange={handleFieldChange}
+                                data-field="approverId"
+                                required>
+                            </lightning-record-picker>
+                        </div>
+
+                        <div class="submission-notes">
+                            <lightning-textarea
+                                label="Additional Submission Notes"
+                                value={formData.submissionNotes}
+                                placeholder="Any additional notes or clarifications for this submission..."
+                                onchange={handleFieldChange}
+                                data-field="submissionNotes"
+                                max-length="500"
+                                class="full-width">
+                            </lightning-textarea>
+                        </div>
+
+                        <div class="form-validation" lwc:if={hasValidationErrors}>
+                            <h4 class="validation-title">Please address the following issues:</h4>
+                            <ul class="validation-errors">
+                                <template for:each={validationErrors} for:item="error">
+                                    <li key={error.id} class="validation-error">{error.message}</li>
+                                </template>
+                            </ul>
+                        </div>
+                    </div>
+                </lightning-card>
+            </div>
+        </div>
+
+        <!-- Navigation Footer -->
+        <footer class="form-footer">
+            <div class="footer-actions">
+                <lightning-button
+                    label="Previous"
+                    variant="neutral"
+                    icon-name="utility:chevronleft"
+                    icon-position="left"
+                    onclick={handlePrevious}
+                    disabled={isPreviousDisabled}
+                    class="nav-btn prev-btn">
+                </lightning-button>
+
+                <div class="footer-center">
+                    <span class="step-indicator">Step {currentStepNumber} of 6</span>
+                </div>
+
+                <template lwc:if={isNotLastStep}>
+                    <lightning-button
+                        label="Next"
+                        variant="brand"
+                        icon-name="utility:chevronright"
+                        icon-position="right"
+                        onclick={handleNext}
+                        disabled={isNextDisabled}
+                        class="nav-btn next-btn">
+                    </lightning-button>
+                </template>
+
+                <template lwc:if={isLastStep}>
+                    <lightning-button
+                        label="Submit Incident"
+                        variant="brand"
+                        icon-name="utility:check"
+                        onclick={handleSubmit}
+                        disabled={isSubmitDisabled}
+                        class="nav-btn submit-btn">
+                    </lightning-button>
+                </template>
+            </div>
+        </footer>
+
+        <!-- Loading Overlay -->
+        <template lwc:if={isLoading}>
+            <div class="loading-overlay">
+                <lightning-spinner
+                    alternative-text="Processing incident report..."
+                    size="large"
+                    class="form-spinner">
+                </lightning-spinner>
+                <p class="loading-text">{loadingMessage}</p>
+            </div>
+        </template>
+
+        <!-- Error Messages -->
+        <template lwc:if={errorMessage}>
+            <div class="error-toast">
+                <lightning-card class="error-card">
+                    <div class="error-content">
+                        <lightning-icon icon-name="utility:error" size="medium" class="error-icon"></lightning-icon>
+                        <div class="error-details">
+                            <h4 class="error-title">Error</h4>
+                            <p class="error-message">{errorMessage}</p>
+                            <lightning-button
+                                label="Dismiss"
+                                variant="neutral"
+                                onclick={clearError}
+                                class="error-dismiss-btn">
+                            </lightning-button>
+                        </div>
+                    </div>
+                </lightning-card>
+            </div>
+        </template>
+    </div>
+</template>

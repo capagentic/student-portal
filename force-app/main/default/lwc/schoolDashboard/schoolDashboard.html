@@ -1,0 +1,351 @@
+<template>
+    <div class="dashboard-container">
+        <!-- Header Section -->
+        <header class="header-section">
+            <div class="brand-container">
+                <div class="brand-logo">
+                    <lightning-icon icon-name="standard:education" size="large" class="doe-logo"></lightning-icon>
+                </div>
+                <div class="brand-text">
+                    <h1 class="brand-title">Student Behaviour Management</h1>
+                    <p class="brand-subtitle">Queensland Department of Education</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <lightning-button-menu
+                    alternative-text="User menu"
+                    icon-name="utility:user"
+                    variant="border-filled"
+                    class="user-menu">
+                    <lightning-menu-item value="profile" label="Profile" prefix-icon-name="utility:user"></lightning-menu-item>
+                    <lightning-menu-item value="settings" label="Settings" prefix-icon-name="utility:settings"></lightning-menu-item>
+                    <lightning-menu-item value="help" label="Help" prefix-icon-name="utility:help"></lightning-menu-item>
+                    <lightning-menu-divider></lightning-menu-divider>
+                    <lightning-menu-item value="logout" label="Logout" prefix-icon-name="utility:logout"></lightning-menu-item>
+                </lightning-button-menu>
+            </div>
+        </header>
+
+        <!-- Mobile Navigation Toggle -->
+        <div class="mobile-nav-toggle" lwc:if={isMobileView}>
+            <lightning-button
+                icon-name="utility:hamburger"
+                variant="border-filled"
+                onclick={toggleMobileMenu}
+                class="menu-toggle-btn"
+                alternative-text="Toggle navigation menu">
+            </lightning-button>
+        </div>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Metrics Cards Section -->
+            <section class="metrics-section">
+                <h2 class="section-title">Key Metrics</h2>
+                <div class="metrics-grid">
+                    <div class="metric-card total-incidents">
+                        <lightning-card>
+                            <div class="metric-content">
+                                <div class="metric-icon">
+                                    <lightning-icon icon-name="utility:warning" size="large" class="warning-icon"></lightning-icon>
+                                </div>
+                                <div class="metric-details">
+                                    <h3 class="metric-value">{totalIncidents}</h3>
+                                    <p class="metric-label">Total Incidents</p>
+                                    <p class="metric-change" data-trend={incidentsTrend}>
+                                        <lightning-icon icon-name={incidentsTrendIcon} size="x-small"></lightning-icon>
+                                        {incidentsChangePercent}% from last month
+                                    </p>
+                                </div>
+                            </div>
+                        </lightning-card>
+                    </div>
+
+                    <div class="metric-card pending-cases">
+                        <lightning-card>
+                            <div class="metric-content">
+                                <div class="metric-icon">
+                                    <lightning-icon icon-name="utility:clock" size="large" class="pending-icon"></lightning-icon>
+                                </div>
+                                <div class="metric-details">
+                                    <h3 class="metric-value">{pendingCases}</h3>
+                                    <p class="metric-label">Pending Cases</p>
+                                    <p class="metric-urgency">
+                                        {urgentCases} urgent
+                                    </p>
+                                </div>
+                            </div>
+                        </lightning-card>
+                    </div>
+
+                    <div class="metric-card active-plans">
+                        <lightning-card>
+                            <div class="metric-content">
+                                <div class="metric-icon">
+                                    <lightning-icon icon-name="utility:planning" size="large" class="planning-icon"></lightning-icon>
+                                </div>
+                                <div class="metric-details">
+                                    <h3 class="metric-value">{activeCarePlans}</h3>
+                                    <p class="metric-label">Active Care Plans</p>
+                                    <p class="metric-detail">
+                                        {recentlyUpdatedPlans} updated this week
+                                    </p>
+                                </div>
+                            </div>
+                        </lightning-card>
+                    </div>
+
+                    <div class="metric-card suspensions">
+                        <lightning-card>
+                            <div class="metric-content">
+                                <div class="metric-icon">
+                                    <lightning-icon icon-name="utility:ban" size="large" class="ban-icon"></lightning-icon>
+                                </div>
+                                <div class="metric-details">
+                                    <h3 class="metric-value">{suspensionsExclusions}</h3>
+                                    <p class="metric-label">Suspensions/Exclusions</p>
+                                    <p class="metric-breakdown">
+                                        {activeSuspensions} active, {totalExclusions} exclusions
+                                    </p>
+                                </div>
+                            </div>
+                        </lightning-card>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Action Panel and Recent Incidents -->
+            <section class="content-grid">
+                <div class="quick-actions-panel">
+                    <lightning-card title="Quick Actions">
+                        <div slot="actions">
+                            <lightning-button-icon
+                                icon-name="utility:refresh"
+                                alternative-text="Refresh actions"
+                                onclick={refreshQuickActions}>
+                            </lightning-button-icon>
+                        </div>
+                        <div class="actions-container">
+                            <div class="primary-actions">
+                                <lightning-button
+                                    label="Record New Incident"
+                                    variant="brand"
+                                    icon-name="utility:add"
+                                    class="action-button primary"
+                                    onclick={handleNewIncident}>
+                                </lightning-button>
+                                <lightning-button
+                                    label="Student Search"
+                                    variant="neutral"
+                                    icon-name="utility:search"
+                                    class="action-button"
+                                    onclick={handleStudentSearch}>
+                                </lightning-button>
+                            </div>
+                            <div class="secondary-actions">
+                                <lightning-button
+                                    label="Generate Reports"
+                                    variant="outline-brand"
+                                    icon-name="utility:chart"
+                                    class="action-button secondary"
+                                    onclick={handleGenerateReports}>
+                                </lightning-button>
+                                <lightning-button
+                                    label="Review Cases"
+                                    variant="outline-brand"
+                                    icon-name="utility:list"
+                                    class="action-button secondary"
+                                    onclick={handleReviewCases}>
+                                </lightning-button>
+                                <lightning-button
+                                    label="Care Plan Review"
+                                    variant="outline-brand"
+                                    icon-name="utility:planning"
+                                    class="action-button secondary"
+                                    onclick={handleCarePlanReview}>
+                                </lightning-button>
+                            </div>
+                        </div>
+                    </lightning-card>
+                </div>
+
+                <div class="recent-incidents-panel">
+                    <lightning-card>
+                        <div slot="title">
+                            <div class="panel-header">
+                                <span>Recent Incidents</span>
+                                <lightning-badge label={recentIncidentsCount} class="incident-count-badge"></lightning-badge>
+                            </div>
+                        </div>
+                        <div slot="actions">
+                            <lightning-button-menu
+                                alternative-text="View options"
+                                icon-name="utility:down"
+                                variant="border-filled">
+                                <lightning-menu-item value="all" label="View All Incidents"></lightning-menu-item>
+                                <lightning-menu-item value="today" label="Today Only"></lightning-menu-item>
+                                <lightning-menu-item value="week" label="This Week"></lightning-menu-item>
+                                <lightning-menu-item value="urgent" label="Urgent Only"></lightning-menu-item>
+                            </lightning-button-menu>
+                        </div>
+
+                        <div class="incidents-table-container">
+                            <template lwc:if={hasRecentIncidents}>
+                                <lightning-datatable
+                                    key-field="id"
+                                    data={recentIncidentsData}
+                                    columns={incidentsColumns}
+                                    sorted-by={sortedBy}
+                                    sorted-direction={sortedDirection}
+                                    onsort={handleSort}
+                                    onrowaction={handleRowAction}
+                                    hide-checkbox-column
+                                    class="incidents-table">
+                                </lightning-datatable>
+                            </template>
+                            <template lwc:else>
+                                <div class="empty-state">
+                                    <lightning-icon icon-name="utility:info" size="large" class="empty-icon"></lightning-icon>
+                                    <p class="empty-message">No recent incidents to display</p>
+                                    <lightning-button
+                                        label="Record First Incident"
+                                        variant="brand"
+                                        onclick={handleNewIncident}
+                                        class="empty-action-btn">
+                                    </lightning-button>
+                                </div>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </div>
+            </section>
+        </main>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" data-visible={sidebarVisible}>
+            <!-- Student Search Widget -->
+            <div class="search-widget">
+                <lightning-card title="Student Search">
+                    <div class="search-container">
+                        <lightning-input
+                            type="search"
+                            label="Search Students"
+                            placeholder="Enter student name or ID..."
+                            value={searchTerm}
+                            onchange={handleSearchChange}
+                            class="student-search-input">
+                        </lightning-input>
+                        <template lwc:if={hasSearchResults}>
+                            <div class="search-results">
+                                <template for:each={searchResults} for:item="student">
+                                    <div key={student.id} class="search-result-item" onclick={handleStudentSelect} data-student-id={student.id}>
+                                        <div class="student-info">
+                                            <span class="student-name">{student.name}</span>
+                                            <span class="student-id">ID: {student.studentId}</span>
+                                        </div>
+                                        <lightning-badge
+                                            label={student.grade}
+                                            class="grade-badge">
+                                        </lightning-badge>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                </lightning-card>
+            </div>
+
+            <!-- Pending Tasks Widget -->
+            <div class="pending-tasks-widget">
+                <lightning-card>
+                    <div slot="title">
+                        <div class="widget-header">
+                            <span>Pending Tasks</span>
+                            <lightning-badge label={pendingTasksCount} class="task-count-badge"></lightning-badge>
+                        </div>
+                    </div>
+                    <div slot="actions">
+                        <lightning-button-icon
+                            icon-name="utility:refresh"
+                            alternative-text="Refresh tasks"
+                            onclick={refreshPendingTasks}>
+                        </lightning-button-icon>
+                    </div>
+
+                    <div class="tasks-container">
+                        <template lwc:if={hasPendingTasks}>
+                            <template for:each={pendingTasks} for:item="task">
+                                <div key={task.id} class="task-item" data-priority={task.priority}>
+                                    <div class="task-info">
+                                        <p class="task-title">{task.title}</p>
+                                        <p class="task-due">Due: {task.dueDate}</p>
+                                        <div class="task-meta">
+                                            <lightning-badge
+                                                label={task.type}
+                                                class="task-type-badge">
+                                            </lightning-badge>
+                                            <lightning-badge
+                                                label={task.priority}
+                                                class="priority-badge">
+                                            </lightning-badge>
+                                        </div>
+                                    </div>
+                                    <div class="task-actions">
+                                        <lightning-button-icon
+                                            icon-name="utility:preview"
+                                            alternative-text="View task"
+                                            size="small"
+                                            onclick={handleViewTask}
+                                            data-task-id={task.id}>
+                                        </lightning-button-icon>
+                                        <lightning-button-icon
+                                            icon-name="utility:check"
+                                            alternative-text="Complete task"
+                                            size="small"
+                                            onclick={handleCompleteTask}
+                                            data-task-id={task.id}>
+                                        </lightning-button-icon>
+                                    </div>
+                                </div>
+                            </template>
+                        </template>
+                        <template lwc:else>
+                            <div class="empty-tasks">
+                                <lightning-icon icon-name="utility:success" size="medium" class="success-icon"></lightning-icon>
+                                <p class="empty-tasks-message">All tasks completed!</p>
+                            </div>
+                        </template>
+                    </div>
+                </lightning-card>
+            </div>
+        </aside>
+
+        <!-- Loading State Overlay -->
+        <template lwc:if={isLoading}>
+            <div class="loading-overlay">
+                <lightning-spinner alternative-text="Loading dashboard data..." size="large" class="dashboard-spinner"></lightning-spinner>
+            </div>
+        </template>
+
+        <!-- Error Message Display -->
+        <template lwc:if={errorMessage}>
+            <div class="error-container">
+                <lightning-card class="error-card">
+                    <div class="error-content">
+                        <lightning-icon icon-name="utility:error" size="medium" class="error-icon"></lightning-icon>
+                        <div class="error-details">
+                            <h3 class="error-title">Unable to load dashboard</h3>
+                            <p class="error-message">{errorMessage}</p>
+                            <lightning-button
+                                label="Try Again"
+                                variant="brand"
+                                onclick={retryLoadData}
+                                class="retry-btn">
+                            </lightning-button>
+                        </div>
+                    </div>
+                </lightning-card>
+            </div>
+        </template>
+    </div>
+</template>

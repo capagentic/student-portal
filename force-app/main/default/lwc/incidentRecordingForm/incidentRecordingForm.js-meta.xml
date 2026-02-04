@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <isExposed>true</isExposed>
+    <description>Multi-step wizard interface for recording student behaviour incidents. Features auto-save functionality, comprehensive validation, mobile-optimized design, and Queensland DoE compliance. Includes 6 guided steps: student selection, incident description, participants, response actions, follow-up planning, and review submission with approval workflow.</description>
+    <masterLabel>Incident Recording Form</masterLabel>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__RecordPage</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__AppPage,lightning__RecordPage">
+            <property name="recordId" type="String" label="Record ID" description="Optional record ID for creating related incident records" />
+            <property name="studentId" type="String" label="Student ID" description="Pre-populate form with specific student information" />
+        </targetConfig>
+        <targetConfig targets="lightningCommunity__Default">
+            <property name="studentId" type="String" label="Student ID" description="Pre-populate form with specific student information" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

@@ -1,0 +1,494 @@
+<template>
+    <div class="regional-dashboard-container">
+        <!-- Header Section -->
+        <header class="dashboard-header">
+            <div class="header-brand">
+                <lightning-icon icon-name="standard:hierarchy" size="large" class="brand-icon"></lightning-icon>
+                <div class="brand-text">
+                    <h1 class="dashboard-title">Regional Office Dashboard</h1>
+                    <p class="dashboard-subtitle">Queensland Department of Education - Regional Management</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <lightning-button-group>
+                    <lightning-button label="Export Report" variant="neutral" icon-name="utility:download" onclick={handleExportReport}></lightning-button>
+                    <lightning-button label="System Settings" variant="outline-brand" icon-name="utility:settings" onclick={handleSystemSettings}></lightning-button>
+                </lightning-button-group>
+            </div>
+        </header>
+
+        <!-- Executive Metrics Section -->
+        <section class="executive-metrics">
+            <h2 class="section-title">Executive Performance Indicators</h2>
+            <div class="metrics-grid">
+                <lightning-card class="metric-card high-priority">
+                    <div class="metric-content">
+                        <div class="metric-icon">
+                            <lightning-icon icon-name="utility:priority" size="large" class="priority-icon"></lightning-icon>
+                        </div>
+                        <div class="metric-data">
+                            <span class="metric-value">{executiveMetrics.highPriorityCases}</span>
+                            <span class="metric-label">High Priority Cases</span>
+                            <span class="metric-trend" data-trend={executiveMetrics.highPriorityTrend}>
+                                {executiveMetrics.highPriorityChange}% vs last month
+                            </span>
+                        </div>
+                    </div>
+                </lightning-card>
+
+                <lightning-card class="metric-card regional-performance">
+                    <div class="metric-content">
+                        <div class="metric-icon">
+                            <lightning-icon icon-name="utility:chart" size="large" class="performance-icon"></lightning-icon>
+                        </div>
+                        <div class="metric-data">
+                            <span class="metric-value">{executiveMetrics.regionalPerformance}%</span>
+                            <span class="metric-label">Regional Performance Score</span>
+                            <span class="metric-baseline">Target: 85%</span>
+                        </div>
+                    </div>
+                </lightning-card>
+
+                <lightning-card class="metric-card compliance-rate">
+                    <div class="metric-content">
+                        <div class="metric-icon">
+                            <lightning-icon icon-name="utility:shield" size="large" class="compliance-icon"></lightning-icon>
+                        </div>
+                        <div class="metric-data">
+                            <span class="metric-value">{executiveMetrics.complianceRate}%</span>
+                            <span class="metric-label">Policy Compliance</span>
+                            <span class="metric-detail">{executiveMetrics.nonCompliantSchools} schools need attention</span>
+                        </div>
+                    </div>
+                </lightning-card>
+
+                <lightning-card class="metric-card response-time">
+                    <div class="metric-content">
+                        <div class="metric-icon">
+                            <lightning-icon icon-name="utility:clock" size="large" class="time-icon"></lightning-icon>
+                        </div>
+                        <div class="metric-data">
+                            <span class="metric-value">{executiveMetrics.avgResponseTime}h</span>
+                            <span class="metric-label">Avg Response Time</span>
+                            <span class="metric-target">Target: ≤24h</span>
+                        </div>
+                    </div>
+                </lightning-card>
+            </div>
+        </section>
+
+        <!-- Main Dashboard Grid -->
+        <main class="main-dashboard-grid">
+            <!-- Case Queue Management -->
+            <section class="case-queue-section">
+                <lightning-card title="Case Queue Management" class="queue-card">
+                    <div slot="actions">
+                        <lightning-button-menu alternative-text="Queue actions" icon-name="utility:down" variant="border-filled">
+                            <lightning-menu-item value="refresh_queue" label="Refresh Queue"></lightning-menu-item>
+                            <lightning-menu-item value="bulk_assign" label="Bulk Assignment"></lightning-menu-item>
+                            <lightning-menu-item value="export_queue" label="Export Queue"></lightning-menu-item>
+                        </lightning-button-menu>
+                    </div>
+
+                    <div class="queue-controls">
+                        <div class="filter-controls">
+                            <lightning-combobox
+                                label="Priority Filter"
+                                value={queueFilters.priority}
+                                placeholder="All Priorities"
+                                options={priorityFilterOptions}
+                                onchange={handlePriorityFilter}
+                                class="filter-combo">
+                            </lightning-combobox>
+                            <lightning-combobox
+                                label="School District"
+                                value={queueFilters.district}
+                                placeholder="All Districts"
+                                options={districtFilterOptions}
+                                onchange={handleDistrictFilter}
+                                class="filter-combo">
+                            </lightning-combobox>
+                            <lightning-combobox
+                                label="Case Type"
+                                value={queueFilters.caseType}
+                                placeholder="All Types"
+                                options={caseTypeFilterOptions}
+                                onchange={handleCaseTypeFilter}
+                                class="filter-combo">
+                            </lightning-combobox>
+                        </div>
+                        <lightning-input
+                            type="search"
+                            label="Search Cases"
+                            value={queueFilters.searchTerm}
+                            placeholder="Search by student, school, or case ID..."
+                            onchange={handleQueueSearch}
+                            class="queue-search">
+                        </lightning-input>
+                    </div>
+
+                    <div class="queue-table-container">
+                        <template lwc:if={hasCaseQueue}>
+                            <lightning-datatable
+                                key-field="id"
+                                data={caseQueueData}
+                                columns={caseQueueColumns}
+                                sorted-by={queueSortedBy}
+                                sorted-direction={queueSortedDirection}
+                                onsort={handleQueueSort}
+                                onrowaction={handleQueueRowAction}
+                                onrowselection={handleQueueRowSelection}
+                                class="queue-table">
+                            </lightning-datatable>
+                        </template>
+                        <template lwc:else>
+                            <div class="empty-queue">
+                                <lightning-icon icon-name="utility:success" size="large" class="empty-icon"></lightning-icon>
+                                <p class="empty-message">No cases in queue</p>
+                            </div>
+                        </template>
+                    </div>
+                </lightning-card>
+            </section>
+
+            <!-- Case Review Panel -->
+            <section class="case-review-section">
+                <lightning-card class="review-card">
+                    <div slot="title">
+                        <div class="review-header">
+                            <span>Case Review Panel</span>
+                            <template lwc:if={selectedCase}>
+                                <lightning-badge label={selectedCase.caseNumber} class="case-number-badge"></lightning-badge>
+                            </template>
+                        </div>
+                    </div>
+
+                    <template lwc:if={selectedCase}>
+                        <div class="case-review-content">
+                            <!-- Case Overview Tab -->
+                            <lightning-tabset active-tab-value={reviewActiveTab} onactive={handleReviewTabChange} class="review-tabs">
+                                <lightning-tab label="Case Overview" value="overview">
+                                    <div class="overview-content">
+                                        <div class="case-summary">
+                                            <h4 class="case-title">{selectedCase.title}</h4>
+                                            <div class="case-meta">
+                                                <div class="meta-item">
+                                                    <span class="meta-label">Student:</span>
+                                                    <span class="meta-value">{selectedCase.studentName}</span>
+                                                </div>
+                                                <div class="meta-item">
+                                                    <span class="meta-label">School:</span>
+                                                    <span class="meta-value">{selectedCase.schoolName}</span>
+                                                </div>
+                                                <div class="meta-item">
+                                                    <span class="meta-label">Submitted:</span>
+                                                    <span class="meta-value">{selectedCase.submittedDate}</span>
+                                                </div>
+                                                <div class="meta-item">
+                                                    <span class="meta-label">Priority:</span>
+                                                    <lightning-badge label={selectedCase.priority} class="priority-badge" data-priority={selectedCase.priority}></lightning-badge>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="case-description">
+                                            <h5>Case Description</h5>
+                                            <p>{selectedCase.description}</p>
+                                        </div>
+                                        <div class="case-attachments" lwc:if={selectedCase.hasAttachments}>
+                                            <h5>Attachments</h5>
+                                            <template for:each={selectedCase.attachments} for:item="attachment">
+                                                <div key={attachment.id} class="attachment-item">
+                                                    <lightning-icon icon-name="utility:attach" size="small"></lightning-icon>
+                                                    <span class="attachment-name">{attachment.name}</span>
+                                                    <lightning-button-icon
+                                                        icon-name="utility:download"
+                                                        alternative-text="Download attachment"
+                                                        onclick={handleDownloadAttachment}
+                                                        data-attachment-id={attachment.id}
+                                                        size="small">
+                                                    </lightning-button-icon>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </lightning-tab>
+
+                                <lightning-tab label="Decision History" value="history">
+                                    <div class="history-content">
+                                        <template lwc:if={hasDecisionHistory}>
+                                            <template for:each={selectedCase.decisionHistory} for:item="decision">
+                                                <div key={decision.id} class="decision-item">
+                                                    <div class="decision-header">
+                                                        <span class="decision-action">{decision.action}</span>
+                                                        <span class="decision-date">{decision.date}</span>
+                                                    </div>
+                                                    <div class="decision-details">
+                                                        <span class="decision-by">By: {decision.decisionMaker}</span>
+                                                        <p class="decision-notes">{decision.notes}</p>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </template>
+                                        <template lwc:else>
+                                            <div class="empty-history">
+                                                <p>No decision history available</p>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </lightning-tab>
+
+                                <lightning-tab label="Stakeholders" value="stakeholders">
+                                    <div class="stakeholders-content">
+                                        <div class="stakeholder-groups">
+                                            <div class="stakeholder-group">
+                                                <h5>School Staff</h5>
+                                                <template for:each={selectedCase.schoolStaff} for:item="staff">
+                                                    <div key={staff.id} class="stakeholder-item">
+                                                        <span class="stakeholder-name">{staff.name}</span>
+                                                        <span class="stakeholder-role">{staff.role}</span>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                            <div class="stakeholder-group">
+                                                <h5>Family</h5>
+                                                <template for:each={selectedCase.family} for:item="member">
+                                                    <div key={member.id} class="stakeholder-item">
+                                                        <span class="stakeholder-name">{member.name}</span>
+                                                        <span class="stakeholder-relationship">{member.relationship}</span>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                            <div class="stakeholder-group">
+                                                <h5>External Services</h5>
+                                                <template for:each={selectedCase.externalServices} for:item="service">
+                                                    <div key={service.id} class="stakeholder-item">
+                                                        <span class="stakeholder-name">{service.organization}</span>
+                                                        <span class="stakeholder-role">{service.serviceType}</span>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </lightning-tab>
+                            </lightning-tabset>
+
+                            <!-- Decision Workflow Interface -->
+                            <div class="decision-workflow">
+                                <h4 class="workflow-title">Decision Actions</h4>
+                                <div class="workflow-actions">
+                                    <lightning-button
+                                        label="Approve Case"
+                                        variant="brand"
+                                        icon-name="utility:check"
+                                        onclick={handleApproveCase}
+                                        class="workflow-btn approve-btn">
+                                    </lightning-button>
+                                    <lightning-button
+                                        label="Request More Info"
+                                        variant="neutral"
+                                        icon-name="utility:info"
+                                        onclick={handleRequestInfo}
+                                        class="workflow-btn">
+                                    </lightning-button>
+                                    <lightning-button
+                                        label="Escalate"
+                                        variant="outline-brand"
+                                        icon-name="utility:trending"
+                                        onclick={handleEscalateCase}
+                                        class="workflow-btn">
+                                    </lightning-button>
+                                    <lightning-button
+                                        label="Reject Case"
+                                        variant="destructive"
+                                        icon-name="utility:close"
+                                        onclick={handleRejectCase}
+                                        class="workflow-btn reject-btn">
+                                    </lightning-button>
+                                </div>
+                                <lightning-textarea
+                                    label="Decision Notes"
+                                    placeholder="Add notes about your decision..."
+                                    value={decisionNotes}
+                                    onchange={handleDecisionNotesChange}
+                                    class="decision-notes-input">
+                                </lightning-textarea>
+                            </div>
+                        </div>
+                    </template>
+                    <template lwc:else>
+                        <div class="no-case-selected">
+                            <lightning-icon icon-name="utility:preview" size="large" class="preview-icon"></lightning-icon>
+                            <p>Select a case from the queue to begin review</p>
+                        </div>
+                    </template>
+                </lightning-card>
+            </section>
+
+            <!-- Regional Analytics -->
+            <section class="analytics-section">
+                <lightning-card title="Regional Analytics" class="analytics-card">
+                    <div slot="actions">
+                        <lightning-button-menu alternative-text="Analytics actions" icon-name="utility:down" variant="border-filled">
+                            <lightning-menu-item value="export_analytics" label="Export Data"></lightning-menu-item>
+                            <lightning-menu-item value="schedule_report" label="Schedule Report"></lightning-menu-item>
+                            <lightning-menu-item value="customize_view" label="Customize View"></lightning-menu-item>
+                        </lightning-button-menu>
+                    </div>
+
+                    <div class="analytics-content">
+                        <div class="analytics-filters">
+                            <lightning-combobox
+                                label="Time Period"
+                                value={analyticsFilters.timePeriod}
+                                options={timePeriodOptions}
+                                onchange={handleTimePeriodChange}
+                                class="analytics-filter">
+                            </lightning-combobox>
+                            <lightning-combobox
+                                label="Chart Type"
+                                value={analyticsFilters.chartType}
+                                options={chartTypeOptions}
+                                onchange={handleChartTypeChange}
+                                class="analytics-filter">
+                            </lightning-combobox>
+                        </div>
+
+                        <!-- Placeholder for charts - would integrate with Chart.js or similar -->
+                        <div class="charts-container">
+                            <div class="chart-placeholder">
+                                <lightning-icon icon-name="utility:chart" size="large" class="chart-icon"></lightning-icon>
+                                <p>Interactive analytics charts would appear here</p>
+                                <p class="chart-description">Showing trends for {analyticsFilters.timePeriod}</p>
+                            </div>
+                        </div>
+
+                        <div class="analytics-summary">
+                            <div class="summary-stats">
+                                <div class="stat-item">
+                                    <span class="stat-number">{analyticsData.totalCases}</span>
+                                    <span class="stat-label">Total Cases</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">{analyticsData.avgResolutionTime}</span>
+                                    <span class="stat-label">Avg Resolution (days)</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">{analyticsData.satisfactionScore}%</span>
+                                    <span class="stat-label">Satisfaction Score</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </lightning-card>
+            </section>
+
+            <!-- Communication Tools -->
+            <section class="communication-section">
+                <lightning-card title="Communication & Compliance" class="communication-card">
+                    <div class="communication-content">
+                        <div class="communication-tabs">
+                            <lightning-tabset active-tab-value={commActiveTab} onactive={handleCommTabChange}>
+                                <lightning-tab label="Notifications" value="notifications">
+                                    <div class="notifications-panel">
+                                        <template lwc:if={hasNotifications}>
+                                            <template for:each={notifications} for:item="notification">
+                                                <div key={notification.id} class="notification-item" data-type={notification.type}>
+                                                    <div class="notification-icon">
+                                                        <lightning-icon icon-name={notification.iconName} size="small"></lightning-icon>
+                                                    </div>
+                                                    <div class="notification-content">
+                                                        <h6 class="notification-title">{notification.title}</h6>
+                                                        <p class="notification-message">{notification.message}</p>
+                                                        <span class="notification-time">{notification.timeAgo}</span>
+                                                    </div>
+                                                    <div class="notification-actions">
+                                                        <lightning-button-icon
+                                                            icon-name="utility:close"
+                                                            alternative-text="Dismiss notification"
+                                                            onclick={handleDismissNotification}
+                                                            data-notification-id={notification.id}
+                                                            size="small">
+                                                        </lightning-button-icon>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </template>
+                                        <template lwc:else>
+                                            <div class="empty-notifications">
+                                                <lightning-icon icon-name="utility:success" size="medium" class="empty-icon"></lightning-icon>
+                                                <p>No new notifications</p>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </lightning-tab>
+
+                                <lightning-tab label="Compliance Monitoring" value="compliance">
+                                    <div class="compliance-panel">
+                                        <div class="compliance-overview">
+                                            <h5>Compliance Status Overview</h5>
+                                            <div class="compliance-stats">
+                                                <div class="compliance-stat">
+                                                    <span class="compliance-number">{complianceData.compliantSchools}</span>
+                                                    <span class="compliance-label">Compliant Schools</span>
+                                                    <div class="compliance-bar">
+                                                        <div class="compliance-fill" style={compliancePercentageStyle}></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="compliance-issues" lwc:if={hasComplianceIssues}>
+                                            <h5>Compliance Issues</h5>
+                                            <template for:each={complianceIssues} for:item="issue">
+                                                <div key={issue.id} class="compliance-issue" data-severity={issue.severity}>
+                                                    <div class="issue-header">
+                                                        <span class="issue-school">{issue.schoolName}</span>
+                                                        <lightning-badge label={issue.severity} class="severity-badge" data-severity={issue.severity}></lightning-badge>
+                                                    </div>
+                                                    <p class="issue-description">{issue.description}</p>
+                                                    <div class="issue-actions">
+                                                        <lightning-button
+                                                            label="Review"
+                                                            variant="base"
+                                                            size="small"
+                                                            onclick={handleReviewCompliance}
+                                                            data-issue-id={issue.id}>
+                                                        </lightning-button>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </lightning-tab>
+                            </lightning-tabset>
+                        </div>
+                    </div>
+                </lightning-card>
+            </section>
+        </main>
+
+        <!-- Loading State -->
+        <template lwc:if={isLoading}>
+            <div class="loading-overlay">
+                <lightning-spinner alternative-text="Loading dashboard data..." size="large" class="dashboard-spinner"></lightning-spinner>
+                <p class="loading-message">{loadingMessage}</p>
+            </div>
+        </template>
+
+        <!-- Error Messages -->
+        <template lwc:if={errorMessage}>
+            <div class="error-container">
+                <lightning-card class="error-card">
+                    <div class="error-content">
+                        <lightning-icon icon-name="utility:error" size="medium" class="error-icon"></lightning-icon>
+                        <div class="error-details">
+                            <h3 class="error-title">Dashboard Error</h3>
+                            <p class="error-message">{errorMessage}</p>
+                            <lightning-button label="Retry" variant="brand" onclick={retryLoadData} class="retry-btn"></lightning-button>
+                        </div>
+                    </div>
+                </lightning-card>
+            </div>
+        </template>
+    </div>
+</template>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <isExposed>true</isExposed>
+    <description>Main dashboard component for the Student Behaviour Management Solution. Features responsive design with Queensland DoE branding, key metrics display, quick actions, recent incidents summary, student search, and pending tasks management.</description>
+    <masterLabel>School Dashboard</masterLabel>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__AppPage,lightning__HomePage">
+            <property name="recordId" type="String" label="Record ID" description="Optional record ID for context-specific data loading" />
+        </targetConfig>
+        <targetConfig targets="lightningCommunity__Default">
+            <property name="recordId" type="String" label="Record ID" description="Optional record ID for context-specific data loading" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

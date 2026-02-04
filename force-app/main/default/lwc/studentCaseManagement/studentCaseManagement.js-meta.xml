@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <isExposed>true</isExposed>
+    <description>Comprehensive student case management interface featuring student profile header with alerts and flags, tabbed navigation for behavior timeline, active interventions, incident history, support services, and communications. Includes academic performance correlation, visual timeline with incident markers, care plan tracking, and contextual quick actions panel. Designed for Queensland DoE compliance with responsive mobile-first approach.</description>
+    <masterLabel>Student Case Management</masterLabel>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__RecordPage</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__AppPage,lightning__RecordPage">
+            <property name="recordId" type="String" label="Student Record ID" description="The Salesforce record ID of the student for case management" />
+            <property name="studentId" type="String" label="Alternative Student ID" description="Alternative student identifier if record ID is not available" />
+        </targetConfig>
+        <targetConfig targets="lightningCommunity__Default">
+            <property name="studentId" type="String" label="Student ID" description="Student identifier for case management in community context" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

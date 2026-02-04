@@ -1,0 +1,514 @@
+<template>
+    <div class="parent-portal-container">
+        <!-- Header Section -->
+        <header class="portal-header">
+            <div class="header-brand">
+                <lightning-icon icon-name="standard:education" size="large" class="brand-icon"></lightning-icon>
+                <div class="brand-text">
+                    <h1 class="portal-title">Student Portal</h1>
+                    <p class="portal-subtitle">Queensland Department of Education</p>
+                </div>
+            </div>
+            <div class="header-user">
+                <span class="welcome-message">Welcome, {parentName}</span>
+                <lightning-button-menu
+                    alternative-text="User menu"
+                    icon-name="utility:user"
+                    variant="border-filled"
+                    class="user-menu">
+                    <lightning-menu-item value="profile" label="My Profile"></lightning-menu-item>
+                    <lightning-menu-item value="settings" label="Settings"></lightning-menu-item>
+                    <lightning-menu-item value="help" label="Help & Support"></lightning-menu-item>
+                    <lightning-menu-divider></lightning-menu-divider>
+                    <lightning-menu-item value="logout" label="Logout"></lightning-menu-item>
+                </lightning-button-menu>
+            </div>
+        </header>
+
+        <!-- Home Dashboard -->
+        <main class="main-content">
+            <!-- Personalized Greeting -->
+            <section class="greeting-section">
+                <div class="greeting-card">
+                    <div class="greeting-content">
+                        <h2 class="greeting-title">Good {timeOfDay}, {parentName}!</h2>
+                        <p class="greeting-message">Here's an update on {studentName}'s progress and school activities.</p>
+                    </div>
+                    <div class="greeting-actions">
+                        <lightning-button
+                            label="Quick Check-in"
+                            variant="brand"
+                            icon-name="utility:comments"
+                            onclick={handleQuickCheckin}
+                            class="greeting-btn">
+                        </lightning-button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Student Overview Cards -->
+            <section class="student-overview">
+                <template for:each={studentData} for:item="student">
+                    <lightning-card key={student.id} class="student-card">
+                        <div slot="title">
+                            <div class="student-header">
+                                <div class="student-avatar">
+                                    <lightning-icon icon-name="standard:user" size="medium" class="avatar-icon"></lightning-icon>
+                                </div>
+                                <div class="student-info">
+                                    <h3 class="student-name">{student.name}</h3>
+                                    <p class="student-details">Grade {student.grade} • {student.schoolName}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div slot="actions">
+                            <lightning-button-menu alternative-text="Student actions" icon-name="utility:down" variant="border-filled">
+                                <lightning-menu-item value="view_progress" label="View Progress"></lightning-menu-item>
+                                <lightning-menu-item value="contact_teacher" label="Contact Teacher"></lightning-menu-item>
+                                <lightning-menu-item value="schedule_meeting" label="Schedule Meeting"></lightning-menu-item>
+                            </lightning-button-menu>
+                        </div>
+
+                        <div class="student-summary">
+                            <div class="summary-stats">
+                                <div class="stat-item">
+                                    <span class="stat-value" data-status={student.behaviorStatus}>{student.behaviorScore}</span>
+                                    <span class="stat-label">Behavior Score</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-value">{student.attendancePercent}%</span>
+                                    <span class="stat-label">Attendance</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-value">{student.recentIncidents}</span>
+                                    <span class="stat-label">Recent Incidents</span>
+                                </div>
+                            </div>
+
+                            <template lwc:if={student.hasAlerts}>
+                                <div class="student-alerts">
+                                    <template for:each={student.alerts} for:item="alert">
+                                        <div key={alert.id} class="alert-item" data-type={alert.type}>
+                                            <lightning-icon icon-name={alert.iconName} size="small" class="alert-icon"></lightning-icon>
+                                            <span class="alert-message">{alert.message}</span>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </lightning-card>
+                </template>
+            </section>
+
+            <!-- Main Content Tabs -->
+            <section class="content-tabs">
+                <lightning-tabset active-tab-value={activeTab} onactive={handleTabChange} variant="scoped" class="portal-tabs">
+
+                    <!-- Behavior Information Tab -->
+                    <lightning-tab label="Behavior & Progress" value="behavior" class="tab-content">
+                        <div class="behavior-section">
+                            <div class="behavior-header">
+                                <h3 class="section-title">Behavior Information</h3>
+                                <lightning-button
+                                    label="Request Meeting"
+                                    variant="outline-brand"
+                                    icon-name="utility:event"
+                                    onclick={handleRequestMeeting}
+                                    class="section-action-btn">
+                                </lightning-button>
+                            </div>
+
+                            <!-- Behavior Summary -->
+                            <div class="behavior-summary">
+                                <lightning-card title="Recent Progress" class="progress-card">
+                                    <div class="progress-content">
+                                        <div class="progress-overview">
+                                            <div class="progress-stat">
+                                                <span class="progress-value positive">{behaviorData.improvementPercent}%</span>
+                                                <span class="progress-label">Improvement This Month</span>
+                                            </div>
+                                            <div class="progress-description">
+                                                <p>{behaviorData.progressSummary}</p>
+                                            </div>
+                                        </div>
+
+                                        <!-- Positive Behaviors -->
+                                        <div class="positive-behaviors">
+                                            <h4 class="behavior-category-title">Positive Behaviors Recognized</h4>
+                                            <template lwc:if={hasPositiveBehaviors}>
+                                                <template for:each={behaviorData.positiveBehaviors} for:item="behavior">
+                                                    <div key={behavior.id} class="behavior-item positive">
+                                                        <div class="behavior-info">
+                                                            <span class="behavior-title">{behavior.title}</span>
+                                                            <span class="behavior-date">{behavior.date}</span>
+                                                        </div>
+                                                        <lightning-icon icon-name="utility:success" size="small" class="behavior-icon positive"></lightning-icon>
+                                                    </div>
+                                                </template>
+                                            </template>
+                                        </div>
+
+                                        <!-- Areas for Growth -->
+                                        <div class="growth-areas" lwc:if={hasGrowthAreas}>
+                                            <h4 class="behavior-category-title">Areas for Growth & Support</h4>
+                                            <template for:each={behaviorData.growthAreas} for:item="area">
+                                                <div key={area.id} class="growth-item">
+                                                    <div class="growth-info">
+                                                        <span class="growth-title">{area.title}</span>
+                                                        <p class="growth-description">{area.description}</p>
+                                                        <p class="growth-support">Support Strategy: {area.supportStrategy}</p>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </lightning-card>
+                            </div>
+
+                            <!-- Incident Details -->
+                            <template lwc:if={hasIncidents}>
+                                <div class="incidents-section">
+                                    <h4 class="subsection-title">Recent Incidents (Family-Appropriate Summary)</h4>
+                                    <template for:each={incidentData} for:item="incident">
+                                        <lightning-card key={incident.id} class="incident-card">
+                                            <div class="incident-content">
+                                                <div class="incident-header">
+                                                    <span class="incident-date">{incident.date}</span>
+                                                    <lightning-badge label={incident.type} class="incident-type-badge"></lightning-badge>
+                                                </div>
+                                                <div class="incident-summary">
+                                                    <p class="incident-description">{incident.parentFriendlyDescription}</p>
+                                                    <p class="incident-outcome">Resolution: {incident.outcome}</p>
+                                                </div>
+                                                <div class="incident-actions">
+                                                    <lightning-button
+                                                        label="View Details"
+                                                        variant="base"
+                                                        size="small"
+                                                        onclick={handleViewIncident}
+                                                        data-incident-id={incident.id}>
+                                                    </lightning-button>
+                                                    <template lwc:if={incident.canDiscuss}>
+                                                        <lightning-button
+                                                            label="Discuss"
+                                                            variant="brand"
+                                                            size="small"
+                                                            onclick={handleDiscussIncident}
+                                                            data-incident-id={incident.id}>
+                                                        </lightning-button>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </lightning-card>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </lightning-tab>
+
+                    <!-- Communications Tab -->
+                    <lightning-tab label="Communications" value="communications" class="tab-content">
+                        <div class="communications-section">
+                            <div class="communications-header">
+                                <h3 class="section-title">Messages & Updates</h3>
+                                <lightning-button
+                                    label="New Message"
+                                    variant="brand"
+                                    icon-name="utility:email"
+                                    onclick={handleNewMessage}
+                                    class="section-action-btn">
+                                </lightning-button>
+                            </div>
+
+                            <!-- Message Categories -->
+                            <div class="message-filters">
+                                <lightning-pill-container>
+                                    <template for:each={messageCategories} for:item="category">
+                                        <lightning-pill
+                                            key={category.value}
+                                            label={category.label}
+                                            name={category.value}
+                                            onclick={handleCategoryFilter}
+                                            class="category-pill"
+                                            data-selected={category.selected}>
+                                        </lightning-pill>
+                                    </template>
+                                </lightning-pill-container>
+                            </div>
+
+                            <!-- Messages List -->
+                            <div class="messages-container">
+                                <template lwc:if={hasMessages}>
+                                    <template for:each={messagesData} for:item="message">
+                                        <div key={message.id} class="message-item" data-read={message.isRead}>
+                                            <div class="message-header">
+                                                <div class="message-info">
+                                                    <span class="message-from">{message.fromName}</span>
+                                                    <span class="message-role">({message.fromRole})</span>
+                                                    <span class="message-date">{message.formattedDate}</span>
+                                                </div>
+                                                <div class="message-status">
+                                                    <template lwc:if={message.isUrgent}>
+                                                        <lightning-badge label="Urgent" class="urgent-badge"></lightning-badge>
+                                                    </template>
+                                                    <template lwc:if={message.requiresResponse}>
+                                                        <lightning-badge label="Response Needed" class="response-badge"></lightning-badge>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                            <div class="message-content">
+                                                <h4 class="message-subject">{message.subject}</h4>
+                                                <p class="message-preview">{message.preview}</p>
+                                            </div>
+                                            <div class="message-actions">
+                                                <lightning-button
+                                                    label="Read"
+                                                    variant="base"
+                                                    size="small"
+                                                    onclick={handleReadMessage}
+                                                    data-message-id={message.id}>
+                                                </lightning-button>
+                                                <template lwc:if={message.canReply}>
+                                                    <lightning-button
+                                                        label="Reply"
+                                                        variant="brand"
+                                                        size="small"
+                                                        onclick={handleReplyMessage}
+                                                        data-message-id={message.id}>
+                                                    </lightning-button>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </template>
+                                <template lwc:else>
+                                    <div class="empty-messages">
+                                        <lightning-icon icon-name="utility:email" size="large" class="empty-icon"></lightning-icon>
+                                        <p class="empty-message">No messages in this category</p>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </lightning-tab>
+
+                    <!-- Appeals Process Tab -->
+                    <lightning-tab label="Appeals & Support" value="appeals" class="tab-content">
+                        <div class="appeals-section">
+                            <div class="appeals-header">
+                                <h3 class="section-title">Appeals Process & Support</h3>
+                                <lightning-button
+                                    label="Start New Appeal"
+                                    variant="brand"
+                                    icon-name="utility:form"
+                                    onclick={handleNewAppeal}
+                                    class="section-action-btn">
+                                </lightning-button>
+                            </div>
+
+                            <!-- Appeals Process Information -->
+                            <div class="appeals-info">
+                                <lightning-card title="Understanding the Appeals Process" class="info-card">
+                                    <div class="info-content">
+                                        <p class="info-description">
+                                            If you disagree with a school decision, you have the right to request a review.
+                                            We're here to help you navigate this process with clear guidance and support.
+                                        </p>
+                                        <div class="appeals-steps">
+                                            <div class="step-item">
+                                                <div class="step-number">1</div>
+                                                <div class="step-content">
+                                                    <h4 class="step-title">Submit Appeal</h4>
+                                                    <p class="step-description">Complete the appeals form with relevant details</p>
+                                                </div>
+                                            </div>
+                                            <div class="step-item">
+                                                <div class="step-number">2</div>
+                                                <div class="step-content">
+                                                    <h4 class="step-title">Review Process</h4>
+                                                    <p class="step-description">Regional office reviews your appeal within 5 business days</p>
+                                                </div>
+                                            </div>
+                                            <div class="step-item">
+                                                <div class="step-number">3</div>
+                                                <div class="step-content">
+                                                    <h4 class="step-title">Decision</h4>
+                                                    <p class="step-description">You'll receive a written decision with next steps</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </lightning-card>
+                            </div>
+
+                            <!-- Current Appeals -->
+                            <template lwc:if={hasActiveAppeals}>
+                                <div class="current-appeals">
+                                    <h4 class="subsection-title">Current Appeals</h4>
+                                    <template for:each={appealsData} for:item="appeal">
+                                        <lightning-card key={appeal.id} class="appeal-card">
+                                            <div class="appeal-content">
+                                                <div class="appeal-header">
+                                                    <h5 class="appeal-title">{appeal.subject}</h5>
+                                                    <lightning-badge
+                                                        label={appeal.status}
+                                                        class="appeal-status-badge"
+                                                        data-status={appeal.status}>
+                                                    </lightning-badge>
+                                                </div>
+                                                <div class="appeal-details">
+                                                    <p><strong>Submitted:</strong> {appeal.submittedDate}</p>
+                                                    <p><strong>Reference:</strong> {appeal.referenceNumber}</p>
+                                                    <p class="appeal-description">{appeal.description}</p>
+                                                </div>
+                                                <div class="appeal-progress">
+                                                    <lightning-progress-indicator
+                                                        current-step={appeal.currentStep}
+                                                        type="path"
+                                                        variant="base">
+                                                        <lightning-progress-step label="Submitted" value="submitted"></lightning-progress-step>
+                                                        <lightning-progress-step label="Under Review" value="review"></lightning-progress-step>
+                                                        <lightning-progress-step label="Decision" value="decision"></lightning-progress-step>
+                                                    </lightning-progress-indicator>
+                                                </div>
+                                            </div>
+                                        </lightning-card>
+                                    </template>
+                                </div>
+                            </template>
+
+                            <!-- Support Resources -->
+                            <div class="support-resources">
+                                <h4 class="subsection-title">Support Resources</h4>
+                                <div class="resources-grid">
+                                    <template for:each={supportResources} for:item="resource">
+                                        <lightning-card key={resource.id} class="resource-card">
+                                            <div class="resource-content">
+                                                <div class="resource-icon">
+                                                    <lightning-icon icon-name={resource.iconName} size="medium"></lightning-icon>
+                                                </div>
+                                                <div class="resource-info">
+                                                    <h5 class="resource-title">{resource.title}</h5>
+                                                    <p class="resource-description">{resource.description}</p>
+                                                    <lightning-button
+                                                        label={resource.actionLabel}
+                                                        variant="base"
+                                                        onclick={handleResourceAction}
+                                                        data-resource-id={resource.id}
+                                                        class="resource-action">
+                                                    </lightning-button>
+                                                </div>
+                                            </div>
+                                        </lightning-card>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </lightning-tab>
+
+                    <!-- Progress Tracking Tab -->
+                    <lightning-tab label="Progress Tracking" value="progress" class="tab-content">
+                        <div class="progress-section">
+                            <div class="progress-header">
+                                <h3 class="section-title">Student Progress Tracking</h3>
+                                <lightning-button
+                                    label="Download Report"
+                                    variant="outline-brand"
+                                    icon-name="utility:download"
+                                    onclick={handleDownloadProgress}
+                                    class="section-action-btn">
+                                </lightning-button>
+                            </div>
+
+                            <!-- Progress Overview -->
+                            <div class="progress-overview-section">
+                                <lightning-card title="Overall Progress" class="overview-card">
+                                    <div class="overview-content">
+                                        <div class="progress-metrics">
+                                            <div class="metric-item">
+                                                <div class="metric-circle" data-progress={progressData.behaviorProgress}>
+                                                    <span class="metric-percentage">{progressData.behaviorProgress}%</span>
+                                                    <span class="metric-label">Behavior Goals</span>
+                                                </div>
+                                            </div>
+                                            <div class="metric-item">
+                                                <div class="metric-circle" data-progress={progressData.academicProgress}>
+                                                    <span class="metric-percentage">{progressData.academicProgress}%</span>
+                                                    <span class="metric-label">Academic Goals</span>
+                                                </div>
+                                            </div>
+                                            <div class="metric-item">
+                                                <div class="metric-circle" data-progress={progressData.socialProgress}>
+                                                    <span class="metric-percentage">{progressData.socialProgress}%</span>
+                                                    <span class="metric-label">Social Skills</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="progress-insights">
+                                            <h4>Recent Insights</h4>
+                                            <template for:each={progressData.insights} for:item="insight">
+                                                <div key={insight.id} class="insight-item">
+                                                    <lightning-icon icon-name={insight.iconName} size="small" class="insight-icon"></lightning-icon>
+                                                    <span class="insight-text">{insight.text}</span>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </lightning-card>
+                            </div>
+
+                            <!-- Goal Tracking -->
+                            <div class="goals-section">
+                                <h4 class="subsection-title">Current Goals & Milestones</h4>
+                                <template for:each={progressData.goals} for:item="goal">
+                                    <lightning-card key={goal.id} class="goal-card">
+                                        <div class="goal-content">
+                                            <div class="goal-header">
+                                                <h5 class="goal-title">{goal.title}</h5>
+                                                <span class="goal-progress-text">{goal.progressPercent}% Complete</span>
+                                            </div>
+                                            <div class="goal-description">
+                                                <p>{goal.description}</p>
+                                            </div>
+                                            <div class="goal-progress-bar">
+                                                <lightning-progress-bar value={goal.progressPercent} class="goal-bar"></lightning-progress-bar>
+                                            </div>
+                                            <div class="goal-details">
+                                                <span class="goal-target">Target Date: {goal.targetDate}</span>
+                                                <span class="goal-next-review">Next Review: {goal.nextReview}</span>
+                                            </div>
+                                        </div>
+                                    </lightning-card>
+                                </template>
+                            </div>
+                        </div>
+                    </lightning-tab>
+                </lightning-tabset>
+            </section>
+        </main>
+
+        <!-- Loading State -->
+        <template lwc:if={isLoading}>
+            <div class="loading-overlay">
+                <lightning-spinner alternative-text="Loading portal data..." size="large" class="portal-spinner"></lightning-spinner>
+                <p class="loading-message">{loadingMessage}</p>
+            </div>
+        </template>
+
+        <!-- Error Messages -->
+        <template lwc:if={errorMessage}>
+            <div class="error-container">
+                <lightning-card class="error-card">
+                    <div class="error-content">
+                        <lightning-icon icon-name="utility:error" size="medium" class="error-icon"></lightning-icon>
+                        <div class="error-details">
+                            <h3 class="error-title">Unable to Load Portal</h3>
+                            <p class="error-message">{errorMessage}</p>
+                            <lightning-button label="Try Again" variant="brand" onclick={retryLoadData} class="retry-btn"></lightning-button>
+                        </div>
+                    </div>
+                </lightning-card>
+            </div>
+        </template>
+    </div>
+</template>
