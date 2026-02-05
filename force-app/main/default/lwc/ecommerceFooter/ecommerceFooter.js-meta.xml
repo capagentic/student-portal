@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>eCommerce Footer</masterLabel>
+    <description>Footer component for eCommerce platform with newsletter signup, links, and contact information</description>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+        <target>lightningCommunity__Default</target>
+        <target>lightningCommunity__Page</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__AppPage,lightning__HomePage,lightningCommunity__Default">
+            <property name="contactPhone" type="String" label="Contact Phone" description="Phone number displayed in footer" default="+1 (555) 123-4567"/>
+            <property name="contactEmail" type="String" label="Contact Email" description="Email address displayed in footer" default="support@eshop.com"/>
+            <property name="contactAddress" type="String" label="Contact Address" description="Physical address displayed in footer" default="123 Commerce Street, Business City, BC 12345"/>
+            <property name="showNewsletterSignup" type="Boolean" label="Show Newsletter Signup" description="Display newsletter subscription form" default="true"/>
+            <property name="showSocialMedia" type="Boolean" label="Show Social Media" description="Display social media links and contact information" default="true"/>
+            <property name="showPaymentMethods" type="Boolean" label="Show Payment Methods" description="Display accepted payment methods and security badges" default="true"/>
+            <property name="enableBackToTop" type="Boolean" label="Enable Back to Top" description="Show back to top button when scrolling" default="true"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

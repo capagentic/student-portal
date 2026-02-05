@@ -1,0 +1,372 @@
+<template>
+    <div class="shopping-cart">
+        <!-- Cart Header -->
+        <div class="cart-header">
+            <div class="header-content">
+                <h2 class="cart-title">
+                    <lightning-icon icon-name="utility:cart" size="medium"></lightning-icon>
+                    Shopping Cart
+                    <template lwc:if={cartItemCount}>
+                        <span class="item-count">({cartItemCount} items)</span>
+                    </template>
+                </h2>
+
+                <template lwc:if={!isCompactView}>
+                    <lightning-button
+                        variant="neutral"
+                        label="Continue Shopping"
+                        onclick={continueShopping}
+                        class="continue-shopping-btn">
+                    </lightning-button>
+                </template>
+            </div>
+
+            <!-- Progress Indicator for Checkout -->
+            <template lwc:if={showCheckoutProgress}>
+                <div class="checkout-progress">
+                    <div class="progress-step active">
+                        <span class="step-number">1</span>
+                        <span class="step-label">Cart</span>
+                    </div>
+                    <div class="progress-step">
+                        <span class="step-number">2</span>
+                        <span class="step-label">Checkout</span>
+                    </div>
+                    <div class="progress-step">
+                        <span class="step-number">3</span>
+                        <span class="step-label">Payment</span>
+                    </div>
+                    <div class="progress-step">
+                        <span class="step-number">4</span>
+                        <span class="step-label">Confirmation</span>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        <!-- Cart Content -->
+        <template lwc:if={hasItems}>
+            <div class="cart-content">
+                <!-- Cart Items -->
+                <div class="cart-items">
+                    <template for:each={cartItems} for:item="item">
+                        <div key={item.id} class="cart-item">
+                            <!-- Product Image -->
+                            <div class="item-image">
+                                <template lwc:if={item.imageUrl}>
+                                    <img src={item.imageUrl} alt={item.name} class="product-image">
+                                </template>
+                                <template lwc:else>
+                                    <div class="image-placeholder">
+                                        <lightning-icon icon-name="utility:photo" size="large"></lightning-icon>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <!-- Product Details -->
+                            <div class="item-details">
+                                <h3 class="item-name">
+                                    <a onclick={viewProduct} data-product-id={item.productId} class="product-link">
+                                        {item.name}
+                                    </a>
+                                </h3>
+
+                                <div class="item-info">
+                                    <template lwc:if={item.brand}>
+                                        <span class="item-brand">Brand: {item.brand}</span>
+                                    </template>
+
+                                    <template lwc:if={item.sku}>
+                                        <span class="item-sku">SKU: {item.sku}</span>
+                                    </template>
+
+                                    <template lwc:if={item.variant}>
+                                        <span class="item-variant">{item.variant}</span>
+                                    </template>
+                                </div>
+
+                                <!-- Availability Status -->
+                                <div class={item.availabilityClass}>
+                                    <lightning-icon icon-name={item.availabilityIcon} size="x-small"></lightning-icon>
+                                    <span>{item.availabilityText}</span>
+                                </div>
+
+                                <!-- Error Message -->
+                                <template lwc:if={item.errorMessage}>
+                                    <div class="item-error">
+                                        <lightning-icon icon-name="utility:warning" size="x-small"></lightning-icon>
+                                        <span>{item.errorMessage}</span>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <!-- Quantity Controls -->
+                            <div class="item-quantity">
+                                <label class="quantity-label">Quantity:</label>
+                                <div class="quantity-controls">
+                                    <lightning-button
+                                        variant="base"
+                                        icon-name="utility:dash"
+                                        onclick={decreaseQuantity}
+                                        data-item-id={item.id}
+                                        disabled={item.quantity <= 1}
+                                        class="quantity-btn decrease"
+                                        alternative-text="Decrease quantity">
+                                    </lightning-button>
+
+                                    <lightning-input
+                                        type="number"
+                                        value={item.quantity}
+                                        min="1"
+                                        max={item.maxQuantity}
+                                        onchange={updateQuantity}
+                                        data-item-id={item.id}
+                                        class="quantity-input"
+                                        variant="label-hidden"
+                                        label="Quantity">
+                                    </lightning-input>
+
+                                    <lightning-button
+                                        variant="base"
+                                        icon-name="utility:add"
+                                        onclick={increaseQuantity}
+                                        data-item-id={item.id}
+                                        disabled={item.quantity >= item.maxQuantity}
+                                        class="quantity-btn increase"
+                                        alternative-text="Increase quantity">
+                                    </lightning-button>
+                                </div>
+                            </div>
+
+                            <!-- Pricing -->
+                            <div class="item-pricing">
+                                <div class="unit-price">
+                                    <template lwc:if={item.originalPrice}>
+                                        <span class="price-original">${item.originalPrice}</span>
+                                    </template>
+                                    <span class="price-current">${item.price}</span>
+                                </div>
+                                <div class="total-price">
+                                    <strong>${item.totalPrice}</strong>
+                                </div>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="item-actions">
+                                <lightning-button
+                                    variant="base"
+                                    icon-name="utility:favorite"
+                                    onclick={moveToWishlist}
+                                    data-item-id={item.id}
+                                    class="action-btn wishlist-btn"
+                                    alternative-text="Move to wishlist">
+                                </lightning-button>
+
+                                <lightning-button
+                                    variant="base"
+                                    icon-name="utility:delete"
+                                    onclick={removeItem}
+                                    data-item-id={item.id}
+                                    class="action-btn remove-btn"
+                                    alternative-text="Remove item">
+                                </lightning-button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Cart Summary -->
+                <div class="cart-summary">
+                    <div class="summary-card">
+                        <h3 class="summary-title">Order Summary</h3>
+
+                        <!-- Subtotal -->
+                        <div class="summary-row">
+                            <span class="summary-label">Subtotal ({cartItemCount} items):</span>
+                            <span class="summary-value">${subtotal}</span>
+                        </div>
+
+                        <!-- Shipping -->
+                        <div class="summary-row">
+                            <span class="summary-label">Shipping:</span>
+                            <span class="summary-value">{shippingText}</span>
+                        </div>
+
+                        <!-- Tax -->
+                        <template lwc:if={showTax}>
+                            <div class="summary-row">
+                                <span class="summary-label">Tax:</span>
+                                <span class="summary-value">${tax}</span>
+                            </div>
+                        </template>
+
+                        <!-- Discount -->
+                        <template lwc:if={discount}>
+                            <div class="summary-row discount">
+                                <span class="summary-label">Discount:</span>
+                                <span class="summary-value">-${discount}</span>
+                            </div>
+                        </template>
+
+                        <!-- Total -->
+                        <div class="summary-row total">
+                            <span class="summary-label">Total:</span>
+                            <span class="summary-value">${total}</span>
+                        </div>
+
+                        <!-- Coupon Code -->
+                        <div class="coupon-section">
+                            <template lwc:if={showCouponInput}>
+                                <div class="coupon-input-container">
+                                    <lightning-input
+                                        type="text"
+                                        placeholder="Enter coupon code"
+                                        value={couponCode}
+                                        onchange={handleCouponInput}
+                                        class="coupon-input"
+                                        variant="label-hidden"
+                                        label="Coupon Code">
+                                    </lightning-input>
+                                    <lightning-button
+                                        variant="brand"
+                                        label="Apply"
+                                        onclick={applyCoupon}
+                                        disabled={isApplyingCoupon}
+                                        class="apply-coupon-btn">
+                                    </lightning-button>
+                                </div>
+                            </template>
+                            <template lwc:else>
+                                <lightning-button
+                                    variant="base"
+                                    label="Have a coupon code?"
+                                    onclick={showCouponField}
+                                    class="show-coupon-btn">
+                                </lightning-button>
+                            </template>
+
+                            <!-- Applied Coupon -->
+                            <template lwc:if={appliedCoupon}>
+                                <div class="applied-coupon">
+                                    <span class="coupon-info">
+                                        <lightning-icon icon-name="utility:success" size="x-small"></lightning-icon>
+                                        Coupon "{appliedCoupon.code}" applied
+                                    </span>
+                                    <lightning-button
+                                        variant="base"
+                                        icon-name="utility:close"
+                                        onclick={removeCoupon}
+                                        class="remove-coupon-btn"
+                                        alternative-text="Remove coupon">
+                                    </lightning-button>
+                                </div>
+                            </template>
+
+                            <!-- Coupon Message -->
+                            <template lwc:if={couponMessage}>
+                                <div class={couponMessageClass}>
+                                    <lightning-icon icon-name={couponMessageIcon} size="x-small"></lightning-icon>
+                                    <span>{couponMessage}</span>
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- Checkout Button -->
+                        <div class="checkout-actions">
+                            <lightning-button
+                                variant="brand"
+                                label="Proceed to Checkout"
+                                onclick={proceedToCheckout}
+                                disabled={!canCheckout}
+                                class="checkout-btn">
+                            </lightning-button>
+
+                            <!-- Security Badge -->
+                            <div class="security-info">
+                                <lightning-icon icon-name="utility:shield" size="x-small"></lightning-icon>
+                                <span>Secure checkout powered by SSL encryption</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipping & Returns Info -->
+            <template lwc:if={!isCompactView}>
+                <div class="additional-info">
+                    <div class="info-cards">
+                        <div class="info-card">
+                            <lightning-icon icon-name="utility:truck" size="small"></lightning-icon>
+                            <div class="info-content">
+                                <h4>Free Shipping</h4>
+                                <p>On orders over $50</p>
+                            </div>
+                        </div>
+
+                        <div class="info-card">
+                            <lightning-icon icon-name="utility:refresh" size="small"></lightning-icon>
+                            <div class="info-content">
+                                <h4>Easy Returns</h4>
+                                <p>30-day return policy</p>
+                            </div>
+                        </div>
+
+                        <div class="info-card">
+                            <lightning-icon icon-name="utility:shield" size="small"></lightning-icon>
+                            <div class="info-content">
+                                <h4>Secure Payment</h4>
+                                <p>Your data is protected</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </template>
+
+        <!-- Empty Cart State -->
+        <template lwc:else>
+            <div class="empty-cart">
+                <div class="empty-content">
+                    <lightning-icon icon-name="utility:cart" size="large" class="empty-icon"></lightning-icon>
+                    <h3 class="empty-title">Your cart is empty</h3>
+                    <p class="empty-message">Add items to your cart to get started with your order.</p>
+
+                    <lightning-button
+                        variant="brand"
+                        label="Start Shopping"
+                        onclick={startShopping}
+                        class="start-shopping-btn">
+                    </lightning-button>
+
+                    <!-- Recent Items or Recommendations -->
+                    <template lwc:if={hasRecentItems}>
+                        <div class="recent-items">
+                            <h4>Recently Viewed</h4>
+                            <div class="recent-items-list">
+                                <template for:each={recentItems} for:item="recentItem">
+                                    <div key={recentItem.id} class="recent-item">
+                                        <img src={recentItem.imageUrl} alt={recentItem.name}>
+                                        <span>{recentItem.name}</span>
+                                        <lightning-button
+                                            variant="base"
+                                            label="Add to Cart"
+                                            onclick={addRecentItemToCart}
+                                            data-product-id={recentItem.id}>
+                                        </lightning-button>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </template>
+
+        <!-- Loading Overlay -->
+        <template lwc:if={isLoading}>
+            <div class="loading-overlay">
+                <lightning-spinner alternative-text="Updating cart" size="medium"></lightning-spinner>
+            </div>
+        </template>
+    </div>
+</template>

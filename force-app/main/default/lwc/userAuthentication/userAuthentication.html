@@ -1,0 +1,286 @@
+<template>
+    <div class="user-authentication">
+        <!-- Authentication Form Container -->
+        <div class="auth-container">
+            <!-- Form Header -->
+            <div class="auth-header">
+                <h2 class="auth-title">{formTitle}</h2>
+                <p class="auth-subtitle">{formSubtitle}</p>
+            </div>
+
+            <!-- Login Form -->
+            <template lwc:if={isLoginMode}>
+                <form class="auth-form" onsubmit={handleLoginSubmit}>
+                    <!-- Email Field -->
+                    <div class="form-field">
+                        <lightning-input
+                            type="email"
+                            name="email"
+                            label="Email Address"
+                            value={loginEmail}
+                            onchange={handleLoginEmailChange}
+                            required
+                            class="auth-input">
+                        </lightning-input>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="form-field">
+                        <lightning-input
+                            type="password"
+                            name="password"
+                            label="Password"
+                            value={loginPassword}
+                            onchange={handleLoginPasswordChange}
+                            required
+                            class="auth-input">
+                        </lightning-input>
+                    </div>
+
+                    <!-- Remember Me -->
+                    <div class="form-field">
+                        <lightning-input
+                            type="checkbox"
+                            name="rememberMe"
+                            label="Remember me"
+                            checked={rememberMe}
+                            onchange={handleRememberMeChange}>
+                        </lightning-input>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="form-actions">
+                        <lightning-button
+                            type="submit"
+                            variant="brand"
+                            label="Sign In"
+                            disabled={isAuthenticating}
+                            class="auth-btn primary">
+                        </lightning-button>
+                    </div>
+
+                    <!-- Forgot Password Link -->
+                    <div class="form-links">
+                        <a onclick={showForgotPassword} class="auth-link">Forgot your password?</a>
+                    </div>
+                </form>
+            </template>
+
+            <!-- Registration Form -->
+            <template lwc:if={isRegisterMode}>
+                <form class="auth-form" onsubmit={handleRegisterSubmit}>
+                    <!-- First Name -->
+                    <div class="form-field">
+                        <lightning-input
+                            type="text"
+                            name="firstName"
+                            label="First Name"
+                            value={registerFirstName}
+                            onchange={handleRegisterFirstNameChange}
+                            required
+                            class="auth-input">
+                        </lightning-input>
+                    </div>
+
+                    <!-- Last Name -->
+                    <div class="form-field">
+                        <lightning-input
+                            type="text"
+                            name="lastName"
+                            label="Last Name"
+                            value={registerLastName}
+                            onchange={handleRegisterLastNameChange}
+                            required
+                            class="auth-input">
+                        </lightning-input>
+                    </div>
+
+                    <!-- Email Field -->
+                    <div class="form-field">
+                        <lightning-input
+                            type="email"
+                            name="email"
+                            label="Email Address"
+                            value={registerEmail}
+                            onchange={handleRegisterEmailChange}
+                            required
+                            class="auth-input">
+                        </lightning-input>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="form-field">
+                        <lightning-input
+                            type="password"
+                            name="password"
+                            label="Password"
+                            value={registerPassword}
+                            onchange={handleRegisterPasswordChange}
+                            required
+                            class="auth-input">
+                        </lightning-input>
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div class="form-field">
+                        <lightning-input
+                            type="password"
+                            name="confirmPassword"
+                            label="Confirm Password"
+                            value={registerConfirmPassword}
+                            onchange={handleRegisterConfirmPasswordChange}
+                            required
+                            class="auth-input">
+                        </lightning-input>
+                    </div>
+
+                    <!-- Terms Agreement -->
+                    <div class="form-field">
+                        <lightning-input
+                            type="checkbox"
+                            name="agreeToTerms"
+                            label="I agree to the Terms of Service and Privacy Policy"
+                            checked={agreeToTerms}
+                            onchange={handleAgreeToTermsChange}
+                            required>
+                        </lightning-input>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="form-actions">
+                        <lightning-button
+                            type="submit"
+                            variant="brand"
+                            label="Create Account"
+                            disabled={isAuthenticating}
+                            class="auth-btn primary">
+                        </lightning-button>
+                    </div>
+                </form>
+            </template>
+
+            <!-- Forgot Password Form -->
+            <template lwc:if={isForgotPasswordMode}>
+                <form class="auth-form" onsubmit={handleForgotPasswordSubmit}>
+                    <!-- Email Field -->
+                    <div class="form-field">
+                        <lightning-input
+                            type="email"
+                            name="email"
+                            label="Email Address"
+                            value={forgotPasswordEmail}
+                            onchange={handleForgotPasswordEmailChange}
+                            required
+                            class="auth-input">
+                        </lightning-input>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="form-actions">
+                        <lightning-button
+                            type="submit"
+                            variant="brand"
+                            label="Send Reset Link"
+                            disabled={isAuthenticating}
+                            class="auth-btn primary">
+                        </lightning-button>
+                    </div>
+
+                    <!-- Back to Login Link -->
+                    <div class="form-links">
+                        <a onclick={showLogin} class="auth-link">Back to Sign In</a>
+                    </div>
+                </form>
+            </template>
+
+            <!-- Form Toggle -->
+            <div class="auth-toggle">
+                <template lwc:if={isLoginMode}>
+                    <p>
+                        Don't have an account?
+                        <a onclick={showRegister} class="auth-link">Create one here</a>
+                    </p>
+                </template>
+                <template lwc:elseif={isRegisterMode}>
+                    <p>
+                        Already have an account?
+                        <a onclick={showLogin} class="auth-link">Sign in here</a>
+                    </p>
+                </template>
+            </div>
+
+            <!-- Social Login (Optional) -->
+            <template lwc:if={enableSocialLogin}>
+                <div class="social-login">
+                    <div class="divider">
+                        <span>or</span>
+                    </div>
+
+                    <div class="social-buttons">
+                        <lightning-button
+                            variant="neutral"
+                            label="Continue with Google"
+                            onclick={loginWithGoogle}
+                            class="social-btn google">
+                        </lightning-button>
+
+                        <lightning-button
+                            variant="neutral"
+                            label="Continue with Facebook"
+                            onclick={loginWithFacebook}
+                            class="social-btn facebook">
+                        </lightning-button>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Error Messages -->
+            <template lwc:if={errorMessage}>
+                <div class="error-message">
+                    <lightning-icon icon-name="utility:error" size="small"></lightning-icon>
+                    <span>{errorMessage}</span>
+                </div>
+            </template>
+
+            <!-- Success Messages -->
+            <template lwc:if={successMessage}>
+                <div class="success-message">
+                    <lightning-icon icon-name="utility:success" size="small"></lightning-icon>
+                    <span>{successMessage}</span>
+                </div>
+            </template>
+
+            <!-- Loading State -->
+            <template lwc:if={isAuthenticating}>
+                <div class="loading-overlay">
+                    <lightning-spinner alternative-text="Authenticating" size="medium"></lightning-spinner>
+                </div>
+            </template>
+        </div>
+
+        <!-- Features/Benefits (Optional) -->
+        <template lwc:if={showFeatures}>
+            <div class="features-section">
+                <h3 class="features-title">Why create an account?</h3>
+                <ul class="features-list">
+                    <li class="feature-item">
+                        <lightning-icon icon-name="utility:check" size="small"></lightning-icon>
+                        <span>Fast and easy checkout</span>
+                    </li>
+                    <li class="feature-item">
+                        <lightning-icon icon-name="utility:check" size="small"></lightning-icon>
+                        <span>Track your orders</span>
+                    </li>
+                    <li class="feature-item">
+                        <lightning-icon icon-name="utility:check" size="small"></lightning-icon>
+                        <span>Save your favorite items</span>
+                    </li>
+                    <li class="feature-item">
+                        <lightning-icon icon-name="utility:check" size="small"></lightning-icon>
+                        <span>Get exclusive offers</span>
+                    </li>
+                </ul>
+            </div>
+        </template>
+    </div>
+</template>

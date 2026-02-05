@@ -1,0 +1,261 @@
+<template>
+    <footer class="ecommerce-footer">
+        <!-- Newsletter Signup Section -->
+        <section class="newsletter-section">
+            <div class="footer-container">
+                <div class="newsletter-content">
+                    <div class="newsletter-info">
+                        <h3 class="newsletter-title">Stay Connected</h3>
+                        <p class="newsletter-description">
+                            Subscribe to our newsletter for exclusive offers, new product updates, and shopping tips.
+                        </p>
+                    </div>
+                    <div class="newsletter-form">
+                        <lightning-input
+                            type="email"
+                            placeholder="Enter your email address"
+                            value={newsletterEmail}
+                            onchange={handleEmailChange}
+                            class="newsletter-input"
+                            variant="label-hidden"
+                            label="Newsletter Email">
+                        </lightning-input>
+                        <lightning-button
+                            variant="brand"
+                            label="Subscribe"
+                            onclick={handleNewsletterSignup}
+                            disabled={isSubscribing}
+                            class="newsletter-btn">
+                        </lightning-button>
+                    </div>
+                </div>
+
+                <!-- Newsletter Status Message -->
+                <template lwc:if={showNewsletterMessage}>
+                    <div class={newsletterMessageClass}>
+                        <lightning-icon icon-name={newsletterMessageIcon} size="small"></lightning-icon>
+                        <span>{newsletterMessage}</span>
+                    </div>
+                </template>
+            </div>
+        </section>
+
+        <!-- Main Footer Content -->
+        <section class="footer-main">
+            <div class="footer-container">
+                <div class="footer-columns">
+                    <!-- Company Information -->
+                    <div class="footer-column">
+                        <h4 class="footer-heading">About eShop</h4>
+                        <ul class="footer-links">
+                            <li><a onclick={handleLinkClick} data-page="about">About Us</a></li>
+                            <li><a onclick={handleLinkClick} data-page="careers">Careers</a></li>
+                            <li><a onclick={handleLinkClick} data-page="press">Press & Media</a></li>
+                            <li><a onclick={handleLinkClick} data-page="investors">Investor Relations</a></li>
+                            <li><a onclick={handleLinkClick} data-page="sustainability">Sustainability</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Customer Service -->
+                    <div class="footer-column">
+                        <h4 class="footer-heading">Customer Service</h4>
+                        <ul class="footer-links">
+                            <li><a onclick={handleLinkClick} data-page="contact">Contact Us</a></li>
+                            <li><a onclick={handleLinkClick} data-page="faq">FAQ</a></li>
+                            <li><a onclick={handleLinkClick} data-page="shipping">Shipping & Delivery</a></li>
+                            <li><a onclick={handleLinkClick} data-page="returns">Returns & Exchanges</a></li>
+                            <li><a onclick={handleLinkClick} data-page="size-guide">Size Guide</a></li>
+                            <li><a onclick={handleLinkClick} data-page="track-order">Track Your Order</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Shopping -->
+                    <div class="footer-column">
+                        <h4 class="footer-heading">Shopping</h4>
+                        <ul class="footer-links">
+                            <li><a onclick={handleLinkClick} data-page="new-arrivals">New Arrivals</a></li>
+                            <li><a onclick={handleLinkClick} data-page="best-sellers">Best Sellers</a></li>
+                            <li><a onclick={handleLinkClick} data-page="sale">Sale & Offers</a></li>
+                            <li><a onclick={handleLinkClick} data-page="gift-cards">Gift Cards</a></li>
+                            <li><a onclick={handleLinkClick} data-page="wishlist">My Wishlist</a></li>
+                            <li><a onclick={handleLinkClick} data-page="compare">Product Compare</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Account & Orders -->
+                    <div class="footer-column">
+                        <h4 class="footer-heading">My Account</h4>
+                        <ul class="footer-links">
+                            <li><a onclick={handleLinkClick} data-page="login">Sign In</a></li>
+                            <li><a onclick={handleLinkClick} data-page="register">Create Account</a></li>
+                            <li><a onclick={handleLinkClick} data-page="orders">Order History</a></li>
+                            <li><a onclick={handleLinkClick} data-page="profile">Account Settings</a></li>
+                            <li><a onclick={handleLinkClick} data-page="addresses">Address Book</a></li>
+                            <li><a onclick={handleLinkClick} data-page="payment-methods">Payment Methods</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Connect With Us -->
+                    <div class="footer-column">
+                        <h4 class="footer-heading">Connect With Us</h4>
+                        <div class="social-media">
+                            <div class="social-links">
+                                <lightning-button
+                                    variant="base"
+                                    icon-name="utility:socialshare"
+                                    alternative-text="Facebook"
+                                    onclick={handleSocialClick}
+                                    data-platform="facebook"
+                                    class="social-btn facebook">
+                                </lightning-button>
+                                <lightning-button
+                                    variant="base"
+                                    icon-name="utility:socialshare"
+                                    alternative-text="Twitter"
+                                    onclick={handleSocialClick}
+                                    data-platform="twitter"
+                                    class="social-btn twitter">
+                                </lightning-button>
+                                <lightning-button
+                                    variant="base"
+                                    icon-name="utility:socialshare"
+                                    alternative-text="Instagram"
+                                    onclick={handleSocialClick}
+                                    data-platform="instagram"
+                                    class="social-btn instagram">
+                                </lightning-button>
+                                <lightning-button
+                                    variant="base"
+                                    icon-name="utility:socialshare"
+                                    alternative-text="LinkedIn"
+                                    onclick={handleSocialClick}
+                                    data-platform="linkedin"
+                                    class="social-btn linkedin">
+                                </lightning-button>
+                                <lightning-button
+                                    variant="base"
+                                    icon-name="utility:socialshare"
+                                    alternative-text="YouTube"
+                                    onclick={handleSocialClick}
+                                    data-platform="youtube"
+                                    class="social-btn youtube">
+                                </lightning-button>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div class="contact-info">
+                            <div class="contact-item">
+                                <lightning-icon icon-name="utility:phone" size="x-small"></lightning-icon>
+                                <span>{contactPhone}</span>
+                            </div>
+                            <div class="contact-item">
+                                <lightning-icon icon-name="utility:email" size="x-small"></lightning-icon>
+                                <span>{contactEmail}</span>
+                            </div>
+                            <div class="contact-item">
+                                <lightning-icon icon-name="utility:location" size="x-small"></lightning-icon>
+                                <span>{contactAddress}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Payment & Security Section -->
+        <section class="payment-security-section">
+            <div class="footer-container">
+                <div class="payment-security-content">
+                    <div class="payment-methods">
+                        <h5 class="section-title">Accepted Payment Methods</h5>
+                        <div class="payment-icons">
+                            <div class="payment-icon visa" title="Visa"></div>
+                            <div class="payment-icon mastercard" title="MasterCard"></div>
+                            <div class="payment-icon amex" title="American Express"></div>
+                            <div class="payment-icon paypal" title="PayPal"></div>
+                            <div class="payment-icon apple-pay" title="Apple Pay"></div>
+                            <div class="payment-icon google-pay" title="Google Pay"></div>
+                        </div>
+                    </div>
+
+                    <div class="security-badges">
+                        <h5 class="section-title">Security & Trust</h5>
+                        <div class="security-icons">
+                            <div class="security-badge">
+                                <lightning-icon icon-name="utility:shield" size="small"></lightning-icon>
+                                <span>SSL Secured</span>
+                            </div>
+                            <div class="security-badge">
+                                <lightning-icon icon-name="utility:check" size="small"></lightning-icon>
+                                <span>Verified Store</span>
+                            </div>
+                            <div class="security-badge">
+                                <lightning-icon icon-name="utility:lock" size="small"></lightning-icon>
+                                <span>Data Protected</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bottom Footer -->
+        <section class="footer-bottom">
+            <div class="footer-container">
+                <div class="footer-bottom-content">
+                    <div class="copyright">
+                        <p>&copy; {currentYear} eShop. All rights reserved.</p>
+                    </div>
+
+                    <div class="legal-links">
+                        <a onclick={handleLegalClick} data-page="privacy">Privacy Policy</a>
+                        <a onclick={handleLegalClick} data-page="terms">Terms of Service</a>
+                        <a onclick={handleLegalClick} data-page="cookies">Cookie Policy</a>
+                        <a onclick={handleLegalClick} data-page="accessibility">Accessibility</a>
+                    </div>
+
+                    <div class="language-currency">
+                        <div class="language-selector">
+                            <lightning-combobox
+                                name="language"
+                                label="Language"
+                                value={selectedLanguage}
+                                placeholder="English"
+                                options={languageOptions}
+                                onchange={handleLanguageChange}
+                                variant="label-hidden"
+                                class="footer-select">
+                            </lightning-combobox>
+                        </div>
+
+                        <div class="currency-selector">
+                            <lightning-combobox
+                                name="currency"
+                                label="Currency"
+                                value={selectedCurrency}
+                                placeholder="USD"
+                                options={currencyOptions}
+                                onchange={handleCurrencyChange}
+                                variant="label-hidden"
+                                class="footer-select">
+                            </lightning-combobox>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Back to Top Button -->
+        <template lwc:if={showBackToTop}>
+            <div class="back-to-top" onclick={scrollToTop}>
+                <lightning-button
+                    variant="brand"
+                    icon-name="utility:up"
+                    alternative-text="Back to Top"
+                    class="back-to-top-btn">
+                </lightning-button>
+            </div>
+        </template>
+    </footer>
+</template>

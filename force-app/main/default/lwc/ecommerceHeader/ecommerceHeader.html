@@ -1,0 +1,210 @@
+<template>
+    <header class="ecommerce-header" data-sticky={isSticky}>
+        <!-- Main Header -->
+        <div class="header-main">
+            <div class="header-container">
+                <!-- Logo Section -->
+                <div class="header-logo">
+                    <a onclick={navigateToHome} class="logo-link">
+                        <lightning-icon
+                            icon-name="standard:retail_execution"
+                            size="medium"
+                            class="logo-icon">
+                        </lightning-icon>
+                        <span class="logo-text">eShop</span>
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Toggle -->
+                <div class="mobile-menu-toggle">
+                    <lightning-button
+                        variant="neutral"
+                        icon-name="utility:menu"
+                        onclick={toggleMobileMenu}
+                        class="menu-toggle-btn">
+                    </lightning-button>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="header-search">
+                    <div class="search-container">
+                        <lightning-input
+                            type="search"
+                            placeholder="Search products..."
+                            value={searchQuery}
+                            onchange={handleSearchInput}
+                            onkeyup={handleSearchKeyup}
+                            class="search-input">
+                        </lightning-input>
+                        <lightning-button
+                            variant="brand"
+                            icon-name="utility:search"
+                            onclick={performSearch}
+                            class="search-btn">
+                        </lightning-button>
+
+                        <!-- Search Suggestions -->
+                        <template lwc:if={showSearchSuggestions}>
+                            <div class="search-suggestions">
+                                <template for:each={searchSuggestions} for:item="suggestion">
+                                    <div key={suggestion.id} class="suggestion-item" onclick={selectSuggestion}>
+                                        <lightning-icon icon-name="utility:search" size="x-small"></lightning-icon>
+                                        <span>{suggestion.name}</span>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- User Actions -->
+                <div class="header-actions">
+                    <!-- User Account -->
+                    <div class="user-account">
+                        <lightning-button-menu
+                            variant="border-filled"
+                            icon-name="utility:user"
+                            menu-alignment="right"
+                            alternative-text="User Account">
+                            <template lwc:if={isLoggedIn}>
+                                <lightning-menu-item value="profile" label="My Profile"></lightning-menu-item>
+                                <lightning-menu-item value="orders" label="Order History"></lightning-menu-item>
+                                <lightning-menu-item value="wishlist" label="Wishlist"></lightning-menu-item>
+                                <lightning-menu-item value="addresses" label="Addresses"></lightning-menu-item>
+                                <lightning-menu-divider></lightning-menu-divider>
+                                <lightning-menu-item value="logout" label="Logout"></lightning-menu-item>
+                            </template>
+                            <template lwc:else>
+                                <lightning-menu-item value="login" label="Login"></lightning-menu-item>
+                                <lightning-menu-item value="register" label="Create Account"></lightning-menu-item>
+                            </template>
+                        </lightning-button-menu>
+                    </div>
+
+                    <!-- Shopping Cart -->
+                    <div class="shopping-cart">
+                        <lightning-button
+                            variant="border-filled"
+                            icon-name="utility:cart"
+                            onclick={openCart}
+                            class="cart-btn">
+                            <template lwc:if={cartItemCount}>
+                                <span class="cart-badge">{cartItemCount}</span>
+                            </template>
+                        </lightning-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Bar -->
+        <nav class="header-navigation" class={navigationClasses}>
+            <div class="nav-container">
+                <!-- Primary Navigation -->
+                <ul class="nav-primary">
+                    <template for:each={navigationItems} for:item="navItem">
+                        <li key={navItem.id} class="nav-item">
+                            <a onclick={handleNavigation}
+                               data-category={navItem.category}
+                               class="nav-link">
+                                {navItem.label}
+                            </a>
+
+                            <!-- Dropdown Menu -->
+                            <template lwc:if={navItem.hasChildren}>
+                                <div class="nav-dropdown">
+                                    <template for:each={navItem.children} for:item="childItem">
+                                        <a key={childItem.id}
+                                           onclick={handleNavigation}
+                                           data-category={childItem.category}
+                                           class="dropdown-link">
+                                            {childItem.label}
+                                        </a>
+                                    </template>
+                                </div>
+                            </template>
+                        </li>
+                    </template>
+                </ul>
+
+                <!-- Secondary Navigation -->
+                <div class="nav-secondary">
+                    <a onclick={handleCustomerService} class="nav-link secondary">Customer Service</a>
+                    <a onclick={handleTrackOrder} class="nav-link secondary">Track Order</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mobile Navigation Overlay -->
+        <template lwc:if={showMobileMenu}>
+            <div class="mobile-overlay" onclick={closeMobileMenu}>
+                <div class="mobile-menu" onclick={stopPropagation}>
+                    <!-- Mobile Header -->
+                    <div class="mobile-header">
+                        <span class="mobile-title">Menu</span>
+                        <lightning-button
+                            variant="base"
+                            icon-name="utility:close"
+                            onclick={closeMobileMenu}
+                            class="close-btn">
+                        </lightning-button>
+                    </div>
+
+                    <!-- Mobile Search -->
+                    <div class="mobile-search">
+                        <lightning-input
+                            type="search"
+                            placeholder="Search products..."
+                            value={mobileSearchQuery}
+                            onchange={handleMobileSearch}
+                            class="mobile-search-input">
+                        </lightning-input>
+                    </div>
+
+                    <!-- Mobile Navigation Items -->
+                    <div class="mobile-nav-items">
+                        <template for:each={navigationItems} for:item="navItem">
+                            <div key={navItem.id} class="mobile-nav-item">
+                                <div class="mobile-nav-link"
+                                     onclick={handleMobileNavigation}
+                                     data-category={navItem.category}>
+                                    {navItem.label}
+                                    <template lwc:if={navItem.hasChildren}>
+                                        <lightning-icon icon-name="utility:chevronright" size="x-small"></lightning-icon>
+                                    </template>
+                                </div>
+
+                                <template lwc:if={navItem.hasChildren}>
+                                    <div class="mobile-subnav">
+                                        <template for:each={navItem.children} for:item="childItem">
+                                            <div key={childItem.id}
+                                                 class="mobile-subnav-link"
+                                                 onclick={handleMobileNavigation}
+                                                 data-category={childItem.category}>
+                                                {childItem.label}
+                                            </div>
+                                        </template>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Mobile Account Actions -->
+                    <div class="mobile-account-actions">
+                        <template lwc:if={isLoggedIn}>
+                            <div class="mobile-action-item" onclick={navigateToProfile}>My Account</div>
+                            <div class="mobile-action-item" onclick={navigateToOrders}>Order History</div>
+                            <div class="mobile-action-item" onclick={navigateToWishlist}>Wishlist</div>
+                            <div class="mobile-action-item" onclick={handleLogout}>Logout</div>
+                        </template>
+                        <template lwc:else>
+                            <div class="mobile-action-item" onclick={navigateToLogin}>Login</div>
+                            <div class="mobile-action-item" onclick={navigateToRegister}>Create Account</div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </header>
+</template>

@@ -1,0 +1,137 @@
+<template>
+    <div class="hero-carousel" data-testid="hero-carousel">
+        <!-- Carousel Container -->
+        <div class="carousel-container">
+            <!-- Carousel Slides -->
+            <div class="carousel-track" style={carouselTrackStyle}>
+                <template for:each={carouselSlides} for:item="slide" for:index="index">
+                    <div key={slide.id} class={slide.slideClass} data-slide-index={index}>
+                        <div class="slide-content">
+                            <!-- Background Image -->
+                            <div class="slide-background" style={slide.backgroundStyle}>
+                                <div class="slide-overlay"></div>
+                            </div>
+
+                            <!-- Slide Content -->
+                            <div class="slide-text-content">
+                                <div class="slide-container">
+                                    <!-- Slide Title -->
+                                    <template lwc:if={slide.title}>
+                                        <h1 class="slide-title" data-animate={slide.titleAnimation}>
+                                            {slide.title}
+                                        </h1>
+                                    </template>
+
+                                    <!-- Slide Subtitle -->
+                                    <template lwc:if={slide.subtitle}>
+                                        <h2 class="slide-subtitle" data-animate={slide.subtitleAnimation}>
+                                            {slide.subtitle}
+                                        </h2>
+                                    </template>
+
+                                    <!-- Slide Description -->
+                                    <template lwc:if={slide.description}>
+                                        <p class="slide-description" data-animate={slide.descriptionAnimation}>
+                                            {slide.description}
+                                        </p>
+                                    </template>
+
+                                    <!-- Call to Action Buttons -->
+                                    <template lwc:if={slide.hasActions}>
+                                        <div class="slide-actions" data-animate={slide.actionsAnimation}>
+                                            <template lwc:if={slide.primaryAction}>
+                                                <lightning-button
+                                                    variant="brand"
+                                                    label={slide.primaryAction.label}
+                                                    onclick={handlePrimaryAction}
+                                                    data-slide-id={slide.id}
+                                                    data-action-url={slide.primaryAction.url}
+                                                    class="slide-btn primary">
+                                                </lightning-button>
+                                            </template>
+
+                                            <template lwc:if={slide.secondaryAction}>
+                                                <lightning-button
+                                                    variant="neutral"
+                                                    label={slide.secondaryAction.label}
+                                                    onclick={handleSecondaryAction}
+                                                    data-slide-id={slide.id}
+                                                    data-action-url={slide.secondaryAction.url}
+                                                    class="slide-btn secondary">
+                                                </lightning-button>
+                                            </template>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Navigation Arrows -->
+            <template lwc:if={showNavigation}>
+                <div class="carousel-navigation">
+                    <lightning-button
+                        variant="base"
+                        icon-name="utility:chevronleft"
+                        onclick={previousSlide}
+                        disabled={isPrevDisabled}
+                        class="nav-arrow prev"
+                        alternative-text="Previous slide">
+                    </lightning-button>
+
+                    <lightning-button
+                        variant="base"
+                        icon-name="utility:chevronright"
+                        onclick={nextSlide}
+                        disabled={isNextDisabled}
+                        class="nav-arrow next"
+                        alternative-text="Next slide">
+                    </lightning-button>
+                </div>
+            </template>
+
+            <!-- Slide Indicators -->
+            <template lwc:if={showIndicators}>
+                <div class="carousel-indicators">
+                    <template for:each={carouselSlides} for:item="slide" for:index="index">
+                        <button
+                            key={slide.id}
+                            type="button"
+                            class={slide.indicatorClass}
+                            onclick={goToSlide}
+                            data-slide-index={index}
+                            aria-label={slide.indicatorLabel}>
+                        </button>
+                    </template>
+                </div>
+            </template>
+
+            <!-- Progress Bar (if enabled) -->
+            <template lwc:if={showProgressBar}>
+                <div class="carousel-progress">
+                    <div class="progress-bar" style={progressBarStyle}></div>
+                </div>
+            </template>
+        </div>
+
+        <!-- Loading State -->
+        <template lwc:if={isLoading}>
+            <div class="carousel-loading">
+                <lightning-spinner alternative-text="Loading carousel slides" size="medium"></lightning-spinner>
+            </div>
+        </template>
+
+        <!-- No Data State -->
+        <template lwc:if={showNoDataMessage}>
+            <div class="carousel-no-data">
+                <div class="no-data-content">
+                    <lightning-icon icon-name="utility:image" size="large" class="no-data-icon"></lightning-icon>
+                    <h3 class="no-data-title">No slides available</h3>
+                    <p class="no-data-message">Please check back later for promotional content.</p>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>

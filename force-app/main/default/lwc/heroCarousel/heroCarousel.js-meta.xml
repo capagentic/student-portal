@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Hero Carousel</masterLabel>
+    <description>Hero carousel component with auto-rotate, navigation controls, and responsive design</description>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+        <target>lightningCommunity__Default</target>
+        <target>lightningCommunity__Page</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__AppPage,lightning__HomePage,lightningCommunity__Default">
+            <property name="autoPlay" type="Boolean" label="Auto Play" description="Automatically rotate slides" default="true"/>
+            <property name="autoPlayInterval" type="Integer" label="Auto Play Interval (ms)" description="Time between slide transitions in milliseconds" default="5000"/>
+            <property name="showNavigation" type="Boolean" label="Show Navigation Arrows" description="Display previous/next navigation arrows" default="true"/>
+            <property name="showIndicators" type="Boolean" label="Show Slide Indicators" description="Display slide indicator dots" default="true"/>
+            <property name="showProgressBar" type="Boolean" label="Show Progress Bar" description="Display progress bar during auto-play" default="false"/>
+            <property name="loop" type="Boolean" label="Enable Loop" description="Loop back to first slide after last slide" default="true"/>
+            <property name="animationType" type="String" label="Animation Type" description="Type of slide animation (slide/fade)" default="slide"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

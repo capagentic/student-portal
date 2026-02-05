@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Shopping Cart</masterLabel>
+    <description>Shopping cart component with quantity management, coupon support, and checkout functionality</description>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+        <target>lightningCommunity__Default</target>
+        <target>lightningCommunity__Page</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__AppPage,lightning__HomePage,lightningCommunity__Default">
+            <property name="isCompactView" type="Boolean" label="Compact View" description="Display cart in compact mode" default="false"/>
+            <property name="showCheckoutProgress" type="Boolean" label="Show Checkout Progress" description="Display checkout progress indicator" default="true"/>
+            <property name="enableCoupons" type="Boolean" label="Enable Coupons" description="Allow coupon code functionality" default="true"/>
+            <property name="showTax" type="Boolean" label="Show Tax" description="Display tax calculation in cart summary" default="true"/>
+            <property name="freeShippingThreshold" type="Integer" label="Free Shipping Threshold" description="Minimum order amount for free shipping" default="50"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

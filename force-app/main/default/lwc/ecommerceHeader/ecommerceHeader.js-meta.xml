@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>eCommerce Header</masterLabel>
+    <description>Header component for eCommerce platform with navigation, search, and cart functionality</description>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+        <target>lightningCommunity__Default</target>
+        <target>lightningCommunity__Page</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__AppPage,lightning__HomePage,lightningCommunity__Default">
+            <property name="showSearchBar" type="Boolean" label="Show Search Bar" description="Display search functionality in header" default="true"/>
+            <property name="showCartIcon" type="Boolean" label="Show Cart Icon" description="Display shopping cart icon with item count" default="true"/>
+            <property name="showUserAccount" type="Boolean" label="Show User Account" description="Display user account menu and login options" default="true"/>
+            <property name="logoText" type="String" label="Logo Text" description="Text to display next to logo icon" default="eShop"/>
+            <property name="enableStickyHeader" type="Boolean" label="Enable Sticky Header" description="Make header sticky on scroll" default="true"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

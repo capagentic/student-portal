@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "Salesforce": {
+      "command": "npx",
+      "args": ["-y", "@salesforce/mcp", "--orgs", "codescannerdev", "--toolsets", "metadata,data,lwc-experts,aura-experts,testing", "--allow-non-ga-tools"]
+    }
+  }
+}
