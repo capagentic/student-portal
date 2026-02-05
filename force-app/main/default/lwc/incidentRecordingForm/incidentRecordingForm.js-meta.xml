@@ -2,7 +2,7 @@
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>65.0</apiVersion>
     <isExposed>true</isExposed>
-    <description>Multi-step wizard interface for recording student behaviour incidents. Features auto-save functionality, comprehensive validation, mobile-optimized design, and Queensland DoE compliance. Includes 6 guided steps: student selection, incident description, participants, response actions, follow-up planning, and review submission with approval workflow.</description>
+    <description>Multi-step wizard for recording student behaviour incidents with auto-save and mobile design</description>
     <masterLabel>Incident Recording Form</masterLabel>
     <targets>
         <target>lightning__AppPage</target>

@@ -2,7 +2,7 @@
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>65.0</apiVersion>
     <isExposed>true</isExposed>
-    <description>Mobile-first parent portal for accessing student behavior information, progress tracking, and school communications. Features personalized dashboard with family-appropriate language, behavior progress visualization, secure messaging system, appeals process interface, and comprehensive support resources. Designed for Queensland DoE parent engagement with responsive design optimized for mobile devices and accessibility compliance (WCAG 2.1 AA).</description>
+    <description>Mobile-first parent portal for student behavior information and school communications</description>
     <masterLabel>Parent Student Portal</masterLabel>
     <targets>
         <target>lightningCommunity__Default</target>
@@ -10,7 +10,7 @@
         <target>lightning__AppPage</target>
     </targets>
     <targetConfigs>
-        <targetConfig targets="lightningCommunity__Default,lightningCommunity__Page">
+        <targetConfig targets="lightningCommunity__Default">
             <property name="parentId" type="String" label="Parent ID" description="Parent or guardian identifier for portal personalization" />
         </targetConfig>
         <targetConfig targets="lightning__AppPage">

@@ -2,7 +2,7 @@
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>65.0</apiVersion>
     <isExposed>true</isExposed>
-    <description>Executive dashboard for regional office staff to manage student behavior cases across multiple schools. Features comprehensive case queue management with advanced filtering, detailed case review panel with decision workflow interface, regional analytics with interactive charts, and compliance monitoring. Includes executive performance indicators, approval hierarchy implementation, and communication tools. Designed for Queensland DoE regional management with responsive design and mobile optimization.</description>
+    <description>Executive dashboard for regional case management with analytics and compliance monitoring</description>
     <masterLabel>Regional Office Dashboard</masterLabel>
     <targets>
         <target>lightning__AppPage</target>
