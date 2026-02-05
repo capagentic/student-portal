@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <isExposed>true</isExposed>
+    <description>Comprehensive footer component for eCommerce platform with company information, navigation links, newsletter signup, and social media integration</description>
+    <masterLabel>eCommerce Footer</masterLabel>
+
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+        <target>lightning__RecordPage</target>
+        <target>lightningCommunity__Default</target>
+        <target>lightningCommunity__Page</target>
+    </targets>
+
+    <targetConfigs>
+        <targetConfig targets="lightning__AppPage,lightning__HomePage,lightning__RecordPage,lightningCommunity__Default">
+            <property name="companyName" type="String" default="eCommerce Store"
+                      label="Company Name"
+                      description="The company name displayed in the footer branding section" />
+
+            <property name="companyDescription" type="String"
+                      default="Your trusted online marketplace for quality products and exceptional service."
+                      label="Company Description"
+                      description="Brief description or tagline text displayed under the company name" />
+
+            <property name="companyAddress" type="String"
+                      default="123 Commerce Street, Business District, City, State 12345"
+                      label="Company Address"
+                      description="Physical address displayed in the contact information section" />
+
+            <property name="companyPhone" type="String" default="(555) 123-4567"
+                      label="Company Phone"
+                      description="Phone number displayed in the contact information section" />
+
+            <property name="companyEmail" type="String" default="contact@ecommercestore.com"
+                      label="Company Email"
+                      description="Email address displayed in the contact information section" />
+
+            <property name="showPaymentMethods" type="Boolean" default="true"
+                      label="Show Payment Methods"
+                      description="Flag to display payment method icons in the footer" />
+
+            <property name="showNewsletterSignup" type="Boolean" default="true"
+                      label="Show Newsletter Signup"
+                      description="Flag to display the newsletter subscription form" />
+
+            <property name="showSocialMedia" type="Boolean" default="true"
+                      label="Show Social Media Links"
+                      description="Flag to display social media platform links" />
+        </targetConfig>
+    </targetConfigs>
+
+    <capabilities>
+        <capability>lightning__hasPageRef</capability>
+    </capabilities>
+</LightningComponentBundle>

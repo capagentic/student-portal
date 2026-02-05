@@ -1,0 +1,71 @@
+/* trustBadges Component Styles */
+
+.trust-badges {
+    background-color: var(--slds-c-card-color-background-alt, #f9f9f9);
+}
+
+.trust-item {
+    height: 100%;
+    transition: transform 0.2s ease;
+}
+
+.trust-item:hover {
+    transform: translateY(-2px);
+}
+
+.trust-icon {
+    color: var(--slds-c-icon-color-foreground-brand, #0176d3);
+}
+
+.star-filled {
+    color: #f99120;
+}
+
+.rating-text {
+    font-weight: 600;
+    color: var(--slds-c-text-color-default, #181818);
+}
+
+.testimonial-card {
+    height: 100%;
+    transition: box-shadow 0.2s ease;
+}
+
+.testimonial-card:hover {
+    box-shadow: var(--slds-c-card-shadow-hover, 0 2px 4px 0 rgba(0, 0, 0, 0.16));
+}
+
+.stat-number {
+    color: var(--slds-c-text-color-brand, #0176d3);
+    font-weight: 700;
+    display: block;
+}
+
+.stat-label {
+    color: var(--slds-c-text-color-weak, #706e6b);
+    margin-top: 0.25rem;
+}
+
+.security-badges .slds-badge {
+    background-color: #4caf50;
+    color: #ffffff;
+}
+
+@media (max-width: 768px) {
+    .trust-item {
+        margin-bottom: 1rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .trust-item,
+    .testimonial-card {
+        transition: none;
+    }
+
+    .trust-item:hover,
+    .testimonial-card:hover {
+        transform: none;
+        box-shadow: none;
+    }
+}

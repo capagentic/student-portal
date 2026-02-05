@@ -1,0 +1,143 @@
+<template>
+    <!-- Hero Carousel Container with ARIA live region for screen readers -->
+    <div class="hero-carousel slds-is-relative"
+         role="region"
+         aria-label="Featured promotions carousel"
+         onmouseenter={handleCarouselHover}
+         onmouseleave={handleCarouselLeave}>
+
+        <!-- Loading State -->
+        <template lwc:if={isLoading}>
+            <div class="slds-spinner_container">
+                <div class="slds-spinner slds-spinner_large" role="status" aria-live="polite">
+                    <span class="slds-assistive-text">Loading carousel content...</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Main Carousel Content -->
+        <template lwc:else>
+            <!-- Carousel Slide Container -->
+            <div class="carousel-container slds-is-relative"
+                 aria-live="polite"
+                 aria-atomic="false">
+
+                <!-- Slides -->
+                <template for:each={carouselSlides} for:item="slide">
+                    <div key={slide.id}
+                         class={slide.cssClass}
+                         data-slide-index={slide.index}
+                         role="tabpanel"
+                         aria-hidden={slide.ariaHidden}
+                         aria-label={slide.slideLabel}>
+
+                        <!-- Background Image -->
+                        <div class="slide-background"
+                             style={slide.backgroundStyle}
+                             role="img"
+                             aria-label={slide.backgroundAlt}></div>
+
+                        <!-- Slide Content Overlay -->
+                        <div class="slide-content slds-p-around_large">
+                            <div class="slds-container_large slds-container_center">
+                                <div class="slds-grid slds-grid_align-spread">
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_5-of-12">
+                                        <div class="content-wrapper">
+                                            <!-- Slide Heading -->
+                                            <h2 class="slide-heading slds-text-heading_large slds-m-bottom_small">
+                                                {slide.heading}
+                                            </h2>
+
+                                            <!-- Slide Description -->
+                                            <p class="slide-description slds-text-body_regular slds-m-bottom_medium">
+                                                {slide.description}
+                                            </p>
+
+                                            <!-- Call-to-Action Button -->
+                                            <template lwc:if={slide.ctaButton}>
+                                                <lightning-button
+                                                    label={slide.ctaButton.label}
+                                                    variant={slide.ctaButton.variant}
+                                                    onclick={handleCtaClick}
+                                                    data-slide-id={slide.id}
+                                                    data-cta-url={slide.ctaButton.url}
+                                                    class="cta-button slds-m-top_small">
+                                                </lightning-button>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Previous/Next Navigation Arrows -->
+            <div class="carousel-navigation" role="group" aria-label="Carousel navigation controls">
+                <!-- Previous Button -->
+                <lightning-button-icon
+                    icon-name="utility:chevronleft"
+                    variant="container"
+                    alternative-text="Previous slide"
+                    title="Previous"
+                    onclick={handlePreviousSlide}
+                    class="nav-arrow nav-arrow-previous"
+                    disabled={isPreviousDisabled}
+                    aria-controls="carousel-slides">
+                </lightning-button-icon>
+
+                <!-- Next Button -->
+                <lightning-button-icon
+                    icon-name="utility:chevronright"
+                    variant="container"
+                    alternative-text="Next slide"
+                    title="Next"
+                    onclick={handleNextSlide}
+                    class="nav-arrow nav-arrow-next"
+                    disabled={isNextDisabled}
+                    aria-controls="carousel-slides">
+                </lightning-button-icon>
+            </div>
+
+            <!-- Slide Indicators -->
+            <div class="carousel-indicators slds-p-around_small"
+                 role="tablist"
+                 aria-label="Slide navigation indicators">
+                <template for:each={slideIndicators} for:item="indicator">
+                    <button key={indicator.id}
+                            class={indicator.cssClass}
+                            onclick={handleIndicatorClick}
+                            data-slide-index={indicator.index}
+                            role="tab"
+                            aria-selected={indicator.isActive}
+                            aria-controls={indicator.panelId}
+                            aria-label={indicator.ariaLabel}
+                            tabindex={indicator.tabIndex}>
+                        <span class="indicator-dot"></span>
+                    </button>
+                </template>
+            </div>
+
+            <!-- Pause/Play Control -->
+            <div class="carousel-controls slds-p-around_x-small">
+                <lightning-button-icon
+                    icon-name={playPauseIcon}
+                    variant="bare"
+                    alternative-text={playPauseAltText}
+                    title={playPauseTitle}
+                    onclick={handlePlayPauseToggle}
+                    class="play-pause-button"
+                    aria-label={playPauseAriaLabel}>
+                </lightning-button-icon>
+            </div>
+        </template>
+
+        <!-- Screen Reader Announcements -->
+        <div class="slds-assistive-text" aria-live="polite" aria-atomic="true">
+            {screenReaderAnnouncement}
+        </div>
+    </div>
+</template>

@@ -1,0 +1,115 @@
+<template>
+    <div class="trust-badges slds-card">
+        <div class="slds-card__header">
+            <h2 class="slds-card__header-title slds-text-heading_medium">Why Choose Us</h2>
+        </div>
+
+        <div class="slds-card__body slds-card__body_inner">
+            <div class="slds-grid slds-wrap slds-gutters_medium">
+
+                <!-- Customer Reviews -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <div class="trust-item slds-text-align_center slds-p-around_small">
+                        <lightning-icon icon-name="utility:reviews" size="large" class="trust-icon"></lightning-icon>
+                        <h3 class="slds-text-heading_small slds-m-top_small">Customer Reviews</h3>
+                        <div class="rating-display slds-m-vertical_x-small">
+                            <template for:each={customerRatingStars} for:item="star">
+                                <lightning-icon key={star.id} icon-name="utility:favorite" size="x-small" class="star-filled"></lightning-icon>
+                            </template>
+                            <span class="rating-text slds-m-left_x-small">4.8 out of 5</span>
+                        </div>
+                        <p class="slds-text-body_small">Over 10,000 satisfied customers</p>
+                    </div>
+                </div>
+
+                <!-- Secure Shopping -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <div class="trust-item slds-text-align_center slds-p-around_small">
+                        <lightning-icon icon-name="utility:shield" size="large" class="trust-icon"></lightning-icon>
+                        <h3 class="slds-text-heading_small slds-m-top_small">Secure Shopping</h3>
+                        <p class="slds-text-body_small slds-m-top_x-small">SSL encryption & secure payments</p>
+                        <div class="security-badges slds-m-top_x-small">
+                            <span class="slds-badge slds-badge_lightest">SSL Secured</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fast Shipping -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <div class="trust-item slds-text-align_center slds-p-around_small">
+                        <lightning-icon icon-name="utility:truck" size="large" class="trust-icon"></lightning-icon>
+                        <h3 class="slds-text-heading_small slds-m-top_small">Fast Shipping</h3>
+                        <p class="slds-text-body_small slds-m-top_x-small">Free shipping on orders over $75</p>
+                        <p class="slds-text-body_small">2-3 business day delivery</p>
+                    </div>
+                </div>
+
+                <!-- Money Back Guarantee -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <div class="trust-item slds-text-align_center slds-p-around_small">
+                        <lightning-icon icon-name="utility:money" size="large" class="trust-icon"></lightning-icon>
+                        <h3 class="slds-text-heading_small slds-m-top_small">Money Back Guarantee</h3>
+                        <p class="slds-text-body_small slds-m-top_x-small">30-day return policy</p>
+                        <p class="slds-text-body_small">100% satisfaction guaranteed</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer Testimonials -->
+            <template lwc:if={showTestimonials}>
+                <div class="testimonials-section slds-m-top_large slds-border_top slds-p-top_medium">
+                    <h3 class="slds-text-heading_small slds-text-align_center slds-m-bottom_medium">What Our Customers Say</h3>
+                    <div class="slds-grid slds-wrap slds-gutters_medium">
+                        <template for:each={testimonials} for:item="testimonial">
+                            <div key={testimonial.id} class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                <div class="testimonial-card slds-box slds-theme_default">
+                                    <div class="testimonial-rating slds-m-bottom_x-small">
+                                        <template for:each={testimonial.stars} for:item="star">
+                                            <lightning-icon key={star.id} icon-name="utility:favorite" size="xx-small" class="star-filled"></lightning-icon>
+                                        </template>
+                                    </div>
+                                    <blockquote class="slds-text-body_small slds-m-bottom_small">
+                                        "{testimonial.text}"
+                                    </blockquote>
+                                    <cite class="slds-text-body_small slds-text-color_weak">
+                                        - {testimonial.customerName}
+                                    </cite>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Statistics -->
+            <div class="statistics-section slds-m-top_large slds-border_top slds-p-top_medium">
+                <div class="slds-grid slds-wrap slds-gutters_medium slds-text-align_center">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-4">
+                        <div class="stat-item">
+                            <span class="stat-number slds-text-heading_large">10k+</span>
+                            <p class="stat-label slds-text-body_small">Happy Customers</p>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-4">
+                        <div class="stat-item">
+                            <span class="stat-number slds-text-heading_large">99.5%</span>
+                            <p class="stat-label slds-text-body_small">Satisfaction Rate</p>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-4">
+                        <div class="stat-item">
+                            <span class="stat-number slds-text-heading_large">24/7</span>
+                            <p class="stat-label slds-text-body_small">Customer Support</p>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-4">
+                        <div class="stat-item">
+                            <span class="stat-number slds-text-heading_large">5+ Years</span>
+                            <p class="stat-label slds-text-body_small">In Business</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <isExposed>true</isExposed>
+    <description>Reusable product card component for displaying individual products with image, details, and actions</description>
+    <masterLabel>Product Card</masterLabel>
+
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+        <target>lightning__RecordPage</target>
+        <target>lightningCommunity__Default</target>
+        <target>lightningCommunity__Page</target>
+    </targets>
+
+    <targetConfigs>
+        <targetConfig targets="lightning__AppPage,lightning__HomePage,lightning__RecordPage,lightningCommunity__Default">
+            <property name="showDescription" type="Boolean" default="true"
+                      label="Show Description" />
+            <property name="cardSize" type="String" default="medium"
+                      label="Card Size" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

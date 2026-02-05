@@ -1,0 +1,295 @@
+<template>
+    <!-- Sticky header container with responsive design -->
+    <header class="slds-global-header slds-is-fixed ecommerce-header" role="banner" aria-label="Site navigation">
+        <div class="slds-grid slds-wrap slds-gutters_small slds-p-horizontal_medium slds-p-vertical_x-small">
+
+            <!-- Mobile hamburger menu button - only visible on mobile -->
+            <div class="slds-col slds-show_small slds-hide_medium">
+                <lightning-button-icon
+                    icon-name="utility:hamburger"
+                    variant="border-filled"
+                    alternative-text="Open navigation menu"
+                    title="Menu"
+                    onclick={handleMobileMenuToggle}
+                    aria-expanded={isMobileMenuOpen}
+                    aria-controls="mobile-navigation">
+                </lightning-button-icon>
+            </div>
+
+            <!-- Logo/Brand section -->
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 slds-large-size_2-of-12">
+                <div class="slds-media slds-media_center">
+                    <div class="slds-media__figure">
+                        <lightning-icon
+                            icon-name="standard:store"
+                            size="medium"
+                            alternative-text="Store logo">
+                        </lightning-icon>
+                    </div>
+                    <div class="slds-media__body slds-p-left_small">
+                        <h1 class="slds-text-heading_medium slds-text-color_brand">
+                            {brandName}
+                        </h1>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desktop navigation menu - hidden on mobile -->
+            <nav class="slds-col slds-hide_small slds-medium-size_4-of-12 slds-large-size_4-of-12"
+                 role="navigation"
+                 aria-label="Primary navigation">
+                <ul class="slds-list_horizontal slds-list_dotted" role="menubar">
+                    <template for:each={navigationItems} for:item="item">
+                        <li class="slds-list__item" key={item.id} role="none">
+                            <a href={item.url}
+                               class="slds-text-link_reset slds-p-horizontal_medium slds-p-vertical_small"
+                               role="menuitem"
+                               onclick={handleNavigation}
+                               data-nav-id={item.id}
+                               tabindex="0">
+                                {item.label}
+                            </a>
+                        </li>
+                    </template>
+                </ul>
+            </nav>
+
+            <!-- Search section -->
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-large-size_4-of-12 slds-p-top_small slds-medium-p-top_none">
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control slds-input-has-icon slds-input-has-icon_right">
+                        <lightning-input
+                            type="search"
+                            placeholder="Search products..."
+                            value={searchTerm}
+                            onchange={handleSearchChange}
+                            onkeyup={handleSearchKeyup}
+                            class="search-input"
+                            aria-label="Search products"
+                            autocomplete="off">
+                        </lightning-input>
+                        <lightning-button-icon
+                            icon-name="utility:search"
+                            variant="bare"
+                            alternative-text="Search"
+                            class="slds-input__icon slds-input__icon_right"
+                            onclick={handleSearch}>
+                        </lightning-button-icon>
+                    </div>
+
+                    <!-- Search autocomplete suggestions dropdown -->
+                    <template lwc:if={showSearchSuggestions}>
+                        <div class="slds-dropdown slds-dropdown_left slds-dropdown_small search-suggestions"
+                             role="listbox"
+                             aria-label="Search suggestions">
+                            <ul class="slds-dropdown__list" role="presentation">
+                                <template for:each={searchSuggestions} for:item="suggestion">
+                                    <li class="slds-dropdown__item" key={suggestion.id} role="presentation">
+                                        <a href="#"
+                                           class="slds-truncate"
+                                           role="option"
+                                           onclick={handleSuggestionSelect}
+                                           data-suggestion={suggestion.term}>
+                                            <lightning-icon
+                                                icon-name="utility:search"
+                                                size="x-small"
+                                                class="slds-m-right_x-small">
+                                            </lightning-icon>
+                                            {suggestion.term}
+                                        </a>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- User actions section (Account and Cart) -->
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-12 slds-large-size_2-of-12 slds-text-align_right">
+                <div class="slds-button-group" role="group" aria-label="User actions">
+
+                    <!-- User account dropdown -->
+                    <div class="slds-dropdown-trigger slds-dropdown-trigger_click" data-dropdown="user-menu">
+                        <lightning-button-icon
+                            icon-name="utility:user"
+                            variant="border-filled"
+                            alternative-text="User account menu"
+                            title="Account"
+                            onclick={handleUserMenuToggle}
+                            aria-expanded={isUserMenuOpen}
+                            aria-haspopup="true"
+                            aria-controls="user-dropdown">
+                        </lightning-button-icon>
+
+                        <!-- User dropdown menu -->
+                        <template lwc:if={isUserMenuOpen}>
+                            <div class="slds-dropdown slds-dropdown_right slds-dropdown_small"
+                                 id="user-dropdown"
+                                 role="menu">
+                                <ul class="slds-dropdown__list" role="presentation">
+                                    <template for:each={userMenuItems} for:item="menuItem">
+                                        <li class="slds-dropdown__item" key={menuItem.id} role="presentation">
+                                            <a href={menuItem.url}
+                                               class="slds-truncate"
+                                               role="menuitem"
+                                               onclick={handleUserMenuAction}
+                                               data-action={menuItem.action}>
+                                                <lightning-icon
+                                                    icon-name={menuItem.icon}
+                                                    size="x-small"
+                                                    class="slds-m-right_x-small">
+                                                </lightning-icon>
+                                                {menuItem.label}
+                                            </a>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Shopping cart with badge -->
+                    <div class="slds-dropdown-trigger slds-dropdown-trigger_click" data-dropdown="cart-menu">
+                        <div class="cart-button-container">
+                            <lightning-button-icon
+                                icon-name="utility:shopping_cart"
+                                variant="border-filled"
+                                alternative-text="Shopping cart"
+                                title="Cart"
+                                onclick={handleCartToggle}
+                                aria-expanded={isCartOpen}
+                                aria-haspopup="true"
+                                aria-controls="cart-dropdown">
+                            </lightning-button-icon>
+
+                            <!-- Cart item count badge -->
+                            <template lwc:if={hasCartItems}>
+                                <span class="slds-badge slds-badge_small cart-badge"
+                                      aria-label={cartItemCountLabel}>
+                                    {cartItemCount}
+                                </span>
+                            </template>
+                        </div>
+
+                        <!-- Cart dropdown preview -->
+                        <template lwc:if={isCartOpen}>
+                            <div class="slds-dropdown slds-dropdown_right slds-dropdown_medium cart-dropdown"
+                                 id="cart-dropdown"
+                                 role="dialog"
+                                 aria-label="Shopping cart preview">
+                                <div class="slds-p-around_small">
+                                    <h3 class="slds-text-heading_small slds-m-bottom_small">
+                                        Shopping Cart ({cartItemCount} items)
+                                    </h3>
+
+                                    <template lwc:if={hasCartItems}>
+                                        <!-- Cart items list -->
+                                        <ul class="slds-list_vertical slds-list_vertical-space" role="list">
+                                            <template for:each={cartItems} for:item="item">
+                                                <li class="slds-list__item" key={item.id} role="listitem">
+                                                    <div class="slds-media slds-media_small">
+                                                        <div class="slds-media__figure">
+                                                            <img src={item.imageUrl}
+                                                                 alt={item.name}
+                                                                 class="cart-item-image">
+                                                        </div>
+                                                        <div class="slds-media__body">
+                                                            <div class="slds-truncate slds-text-body_small">
+                                                                {item.name}
+                                                            </div>
+                                                            <div class="slds-text-color_weak slds-text-body_small">
+                                                                Qty: {item.quantity} × ${item.price}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </template>
+                                        </ul>
+
+                                        <!-- Cart total and actions -->
+                                        <div class="slds-border_top slds-p-top_small slds-m-top_small">
+                                            <div class="slds-text-align_right slds-text-heading_small slds-m-bottom_small">
+                                                Total: ${cartTotal}
+                                            </div>
+                                            <div class="slds-button-group">
+                                                <lightning-button
+                                                    label="View Cart"
+                                                    onclick={handleViewCart}
+                                                    class="slds-m-right_x-small">
+                                                </lightning-button>
+                                                <lightning-button
+                                                    label="Checkout"
+                                                    variant="brand"
+                                                    onclick={handleCheckout}>
+                                                </lightning-button>
+                                            </div>
+                                        </div>
+                                    </template>
+
+                                    <!-- Empty cart state -->
+                                    <template lwc:else>
+                                        <div class="slds-text-align_center slds-p-vertical_medium">
+                                            <lightning-icon
+                                                icon-name="utility:shopping_cart"
+                                                size="large"
+                                                class="slds-m-bottom_small">
+                                            </lightning-icon>
+                                            <p class="slds-text-body_regular">Your cart is empty</p>
+                                            <lightning-button
+                                                label="Continue Shopping"
+                                                onclick={handleContinueShopping}
+                                                class="slds-m-top_small">
+                                            </lightning-button>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile navigation menu overlay -->
+        <template lwc:if={isMobileMenuOpen}>
+            <div class="mobile-nav-overlay slds-backdrop slds-backdrop_open" onclick={handleMobileMenuClose}>
+                <nav class="mobile-nav slds-card"
+                     id="mobile-navigation"
+                     role="navigation"
+                     aria-label="Mobile navigation">
+                    <div class="slds-card__header">
+                        <div class="slds-media slds-media_center">
+                            <div class="slds-media__body">
+                                <h2 class="slds-card__header-title slds-text-heading_small">Navigation</h2>
+                            </div>
+                            <div class="slds-media__figure slds-media__figure_reverse">
+                                <lightning-button-icon
+                                    icon-name="utility:close"
+                                    variant="bare"
+                                    alternative-text="Close navigation"
+                                    onclick={handleMobileMenuClose}>
+                                </lightning-button-icon>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-card__body slds-card__body_inner">
+                        <ul class="slds-list_vertical" role="menu">
+                            <template for:each={navigationItems} for:item="item">
+                                <li class="slds-list__item slds-border_bottom" key={item.id} role="none">
+                                    <a href={item.url}
+                                       class="slds-text-link_reset slds-p-vertical_medium slds-p-horizontal_small slds-text-body_regular"
+                                       role="menuitem"
+                                       onclick={handleMobileNavigation}
+                                       data-nav-id={item.id}>
+                                        {item.label}
+                                    </a>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </template>
+    </header>
+</template>

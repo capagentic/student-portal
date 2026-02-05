@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <isExposed>true</isExposed>
+    <description>Auto-rotating banner carousel component for featured content and promotions with manual navigation and accessibility support</description>
+    <masterLabel>Hero Carousel</masterLabel>
+
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+        <target>lightning__RecordPage</target>
+        <target>lightningCommunity__Default</target>
+        <target>lightningCommunity__Page</target>
+    </targets>
+
+    <targetConfigs>
+        <targetConfig targets="lightning__AppPage,lightning__HomePage,lightning__RecordPage,lightningCommunity__Default">
+            <property name="rotationInterval" type="Integer" default="5000"
+                      label="Rotation Interval (ms)"
+                      description="Auto-rotation interval in milliseconds (default: 5000ms)" />
+
+            <property name="autoRotate" type="Boolean" default="true"
+                      label="Auto Rotate"
+                      description="Enable or disable auto-rotation of slides" />
+
+            <property name="pauseOnHover" type="Boolean" default="true"
+                      label="Pause on Hover"
+                      description="Pause auto-rotation when user hovers over the carousel" />
+
+            <property name="showNavigationArrows" type="Boolean" default="true"
+                      label="Show Navigation Arrows"
+                      description="Display previous and next navigation arrow buttons" />
+
+            <property name="showIndicators" type="Boolean" default="true"
+                      label="Show Slide Indicators"
+                      description="Display slide indicator dots for direct navigation" />
+
+            <property name="showPlayPauseControl" type="Boolean" default="true"
+                      label="Show Play/Pause Control"
+                      description="Display play/pause button for manual control of auto-rotation" />
+
+            <property name="maxSlides" type="Integer" default="8"
+                      label="Maximum Slides"
+                      description="Maximum number of slides supported (1-8)" />
+        </targetConfig>
+    </targetConfigs>
+
+    <capabilities>
+        <capability>lightning__hasPageRef</capability>
+    </capabilities>
+</LightningComponentBundle>

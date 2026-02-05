@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <isExposed>true</isExposed>
+    <description>Responsive sticky header component for eCommerce platform with navigation, search, user account access, and shopping cart functionality</description>
+    <masterLabel>eCommerce Header</masterLabel>
+
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+        <target>lightning__RecordPage</target>
+        <target>lightningCommunity__Default</target>
+        <target>lightningCommunity__Page</target>
+    </targets>
+
+    <targetConfigs>
+        <targetConfig targets="lightning__AppPage,lightning__HomePage,lightning__RecordPage,lightningCommunity__Default">
+            <property name="brandName" type="String" default="eCommerce Store"
+                      label="Brand Name"
+                      description="The brand name displayed in the header logo area" />
+
+            <property name="showSearch" type="Boolean" default="true"
+                      label="Show Search Bar"
+                      description="Flag to show or hide the search functionality in the header" />
+
+            <property name="showUserMenu" type="Boolean" default="true"
+                      label="Show User Menu"
+                      description="Flag to show or hide the user account menu dropdown" />
+
+            <property name="showCart" type="Boolean" default="true"
+                      label="Show Shopping Cart"
+                      description="Flag to show or hide the shopping cart icon and dropdown" />
+
+            <property name="isAuthenticated" type="Boolean" default="false"
+                      label="User Authenticated"
+                      description="Current user authentication status - affects the user menu options displayed" />
+        </targetConfig>
+    </targetConfigs>
+
+    <capabilities>
+        <capability>lightning__hasPageRef</capability>
+    </capabilities>
+</LightningComponentBundle>

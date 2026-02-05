@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <isExposed>true</isExposed>
+    <description>Grid display of product categories with visual representation, hover effects, and navigation support</description>
+    <masterLabel>Featured Categories</masterLabel>
+
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+        <target>lightning__RecordPage</target>
+        <target>lightningCommunity__Default</target>
+        <target>lightningCommunity__Page</target>
+    </targets>
+
+    <targetConfigs>
+        <targetConfig targets="lightning__AppPage,lightning__HomePage,lightning__RecordPage,lightningCommunity__Default">
+            <property name="maxCategories" type="Integer" default="12"
+                      label="Max Categories"
+                      description="Maximum number of categories to display (1-12)" />
+
+            <property name="showQuickActions" type="Boolean" default="false"
+                      label="Show Quick Actions"
+                      description="Display quick action buttons (favorite, share) on category cards" />
+
+            <property name="showDescriptions" type="Boolean" default="true"
+                      label="Show Descriptions"
+                      description="Enable category descriptions display on cards" />
+
+            <property name="showViewAllButton" type="Boolean" default="true"
+                      label="Show View All Button"
+                      description="Display 'View All Categories' button when more categories are available" />
+
+            <property name="sectionTitle" type="String" default="Shop by Category"
+                      label="Section Title"
+                      description="Custom title for the categories section" />
+
+            <property name="sectionSubtitle" type="String"
+                      default="Discover our most popular product categories"
+                      label="Section Subtitle"
+                      description="Custom subtitle for the categories section" />
+        </targetConfig>
+    </targetConfigs>
+
+    <capabilities>
+        <capability>lightning__hasPageRef</capability>
+    </capabilities>
+</LightningComponentBundle>

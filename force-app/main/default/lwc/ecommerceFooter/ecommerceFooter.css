@@ -1,0 +1,346 @@
+/* eCommerceFooter Component Styles */
+
+/* Main footer container */
+.ecommerce-footer {
+    background-color: var(--slds-c-card-color-background-alt, #f3f2f2);
+    border-top: 2px solid var(--slds-c-card-color-border, #d8dde6);
+    color: var(--slds-c-text-color-default, #181818);
+    margin-top: auto; /* Push footer to bottom if using flexbox layout */
+}
+
+/* Footer section containers */
+.footer-section {
+    padding: var(--slds-c-card-spacing-block, 1rem);
+    height: 100%;
+}
+
+/* Company branding in footer */
+.footer-section .slds-text-heading_medium {
+    font-weight: var(--slds-c-heading-font-weight, 600);
+    color: var(--slds-c-text-color-brand, #0176d3);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.footer-section .slds-text-body_regular {
+    line-height: 1.5;
+    margin-bottom: var(--slds-c-card-spacing-block, 1rem);
+}
+
+/* Contact information styling */
+address {
+    font-style: normal;
+}
+
+address div {
+    display: flex;
+    align-items: center;
+    line-height: 1.4;
+}
+
+address lightning-icon {
+    flex-shrink: 0;
+    color: var(--slds-c-icon-color-foreground-default, #706e6b);
+}
+
+/* Footer links styling */
+.footer-link {
+    color: var(--slds-c-link-color-text-default, #0176d3);
+    text-decoration: none;
+    transition: color 0.1s ease;
+    position: relative;
+}
+
+.footer-link:hover,
+.footer-link:focus {
+    color: var(--slds-c-link-color-text-hover, #014486);
+    text-decoration: underline;
+    outline: none;
+}
+
+.footer-link:focus {
+    outline: 2px solid var(--slds-c-button-color-border-focus, #0176d3);
+    outline-offset: 2px;
+    border-radius: var(--slds-c-button-radius-border, 0.25rem);
+}
+
+/* Legal links horizontal layout */
+.legal-links {
+    justify-content: flex-start;
+}
+
+.legal-link {
+    font-size: var(--slds-c-text-font-size-2, 0.75rem);
+    padding: var(--slds-c-button-spacing-block-start, 0.25rem) var(--slds-c-button-spacing-inline-start, 0.5rem);
+    border-radius: var(--slds-c-button-radius-border, 0.25rem);
+}
+
+/* Newsletter form styling */
+.newsletter-form {
+    max-width: 100%;
+}
+
+.newsletter-input {
+    padding-right: 120px; /* Space for button */
+}
+
+.newsletter-button {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: calc(100% - 8px);
+    min-height: 32px;
+    border-radius: var(--slds-c-button-radius-border, 0.25rem);
+}
+
+/* Form element spacing */
+.slds-form-element__control {
+    position: relative;
+}
+
+.slds-form-element__help {
+    margin-top: var(--slds-c-form-spacing-block-start, 0.25rem);
+    font-size: var(--slds-c-text-font-size-2, 0.75rem);
+    line-height: 1.4;
+}
+
+/* Social media links styling */
+.social-media-section {
+    margin-top: var(--slds-c-card-spacing-block, 1rem);
+}
+
+.social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin-right: var(--slds-c-button-spacing-inline-end, 0.5rem);
+    margin-bottom: var(--slds-c-button-spacing-block-end, 0.5rem);
+    border: 1px solid var(--slds-c-button-color-border, #c9c7c5);
+    border-radius: var(--slds-c-button-radius-border, 0.25rem);
+    background-color: var(--slds-c-button-color-background, #ffffff);
+    color: var(--slds-c-button-color-text, #0176d3);
+    text-decoration: none;
+    transition: all 0.1s ease;
+}
+
+.social-link:hover,
+.social-link:focus {
+    background-color: var(--slds-c-button-color-background-hover, #f3f2f2);
+    border-color: var(--slds-c-button-color-border-hover, #c9c7c5);
+    color: var(--slds-c-button-color-text-hover, #014486);
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: var(--slds-c-button-shadow-focus, 0 0 3px rgba(21, 137, 238, 0.16));
+}
+
+.social-link:focus {
+    outline: 2px solid var(--slds-c-button-color-border-focus, #0176d3);
+    outline-offset: 2px;
+}
+
+.social-link:active {
+    transform: translateY(0);
+}
+
+/* Payment methods styling */
+.payment-methods {
+    text-align: right;
+}
+
+.payment-icon {
+    color: var(--slds-c-icon-color-foreground-default, #706e6b);
+    opacity: 0.7;
+    transition: opacity 0.1s ease;
+}
+
+.payment-icon:hover {
+    opacity: 1;
+}
+
+/* Section headings */
+.footer-section h3 {
+    color: var(--slds-c-text-color-default, #181818);
+    font-weight: var(--slds-c-heading-font-weight, 600);
+    border-bottom: 2px solid var(--slds-c-card-color-border, #d8dde6);
+    padding-bottom: var(--slds-c-card-spacing-block, 0.5rem);
+    margin-bottom: var(--slds-c-card-spacing-block, 1rem);
+}
+
+.footer-section h4 {
+    color: var(--slds-c-text-color-default, #181818);
+    font-weight: var(--slds-c-heading-font-weight, 600);
+    margin-bottom: var(--slds-c-card-spacing-block, 0.5rem);
+}
+
+/* List styling */
+.slds-list_vertical .slds-list__item {
+    padding: var(--slds-c-list-item-spacing-block-start, 0.25rem) 0;
+}
+
+.slds-list_horizontal.legal-links .slds-list__item {
+    padding: var(--slds-c-list-item-spacing-block-start, 0.25rem) var(--slds-c-list-item-spacing-inline-end, 0.5rem);
+}
+
+/* Responsive design adjustments */
+@media (max-width: 768px) {
+    .ecommerce-footer {
+        padding: var(--slds-c-card-spacing-block, 1rem) var(--slds-c-card-spacing-inline, 1rem);
+    }
+
+    .footer-section {
+        margin-bottom: var(--slds-c-card-spacing-block, 1.5rem);
+        text-align: center;
+    }
+
+    .legal-links {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .payment-methods {
+        text-align: center;
+        margin-top: var(--slds-c-card-spacing-block, 1rem);
+    }
+
+    .slds-grid_align-end {
+        justify-content: center;
+    }
+
+    .newsletter-input {
+        padding-right: 100px; /* Adjust for smaller button */
+    }
+
+    .newsletter-button {
+        width: 90px;
+        font-size: var(--slds-c-button-font-size, 0.75rem);
+    }
+
+    .social-link {
+        margin-right: var(--slds-c-button-spacing-inline-end, 0.25rem);
+    }
+}
+
+@media (max-width: 480px) {
+    .newsletter-form .slds-input-has-icon {
+        flex-direction: column;
+    }
+
+    .newsletter-input {
+        padding-right: var(--slds-c-input-spacing-inline-end, 0.75rem);
+        margin-bottom: var(--slds-c-form-spacing-block-end, 0.5rem);
+    }
+
+    .newsletter-button {
+        position: static;
+        transform: none;
+        width: 100%;
+        height: auto;
+        min-height: 40px;
+    }
+
+    .social-link {
+        width: 36px;
+        height: 36px;
+        margin-right: var(--slds-c-button-spacing-inline-end, 0.25rem);
+        margin-bottom: var(--slds-c-button-spacing-block-end, 0.25rem);
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .ecommerce-footer {
+        border-top: 3px solid;
+    }
+
+    .footer-section h3 {
+        border-bottom: 3px solid;
+    }
+
+    .social-link {
+        border-width: 2px;
+    }
+
+    .payment-icon {
+        opacity: 1;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .footer-link,
+    .social-link,
+    .payment-icon {
+        transition: none;
+    }
+
+    .social-link:hover {
+        transform: none;
+    }
+}
+
+/* Dark theme support */
+@media (prefers-color-scheme: dark) {
+    .ecommerce-footer {
+        background-color: var(--slds-c-card-color-background-alt-dark, #1a1a1a);
+        color: var(--slds-c-text-color-default-dark, #ffffff);
+    }
+
+    .footer-link {
+        color: var(--slds-c-link-color-text-default-dark, #4fc3f7);
+    }
+
+    .footer-link:hover,
+    .footer-link:focus {
+        color: var(--slds-c-link-color-text-hover-dark, #81d4fa);
+    }
+
+    .social-link {
+        background-color: var(--slds-c-button-color-background-dark, #2a2a2a);
+        border-color: var(--slds-c-button-color-border-dark, #444);
+        color: var(--slds-c-button-color-text-dark, #4fc3f7);
+    }
+
+    .social-link:hover,
+    .social-link:focus {
+        background-color: var(--slds-c-button-color-background-hover-dark, #3a3a3a);
+        border-color: var(--slds-c-button-color-border-hover-dark, #555);
+    }
+}
+
+/* Print styles */
+@media print {
+    .ecommerce-footer {
+        background: #fff !important;
+        color: #000 !important;
+        border-top: 1px solid #000;
+        box-shadow: none;
+    }
+
+    .social-media-section,
+    .newsletter-form {
+        display: none !important;
+    }
+
+    .footer-link {
+        color: #000 !important;
+        text-decoration: underline !important;
+    }
+
+    .social-link {
+        display: none !important;
+    }
+
+    .payment-methods {
+        display: none !important;
+    }
+}
+
+/* Focus trap for accessibility */
+.footer-section:focus-within {
+    outline: 2px solid var(--slds-c-button-color-border-focus, #0176d3);
+    outline-offset: 4px;
+    border-radius: var(--slds-c-card-radius-border, 0.25rem);
+}

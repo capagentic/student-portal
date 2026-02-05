@@ -1,0 +1,163 @@
+<template>
+    <!-- Featured Categories Section -->
+    <div class="featured-categories slds-p-around_medium" role="region" aria-label="Featured product categories">
+
+        <!-- Section Header -->
+        <div class="slds-text-align_center slds-m-bottom_large">
+            <h2 class="slds-text-heading_large slds-m-bottom_small">Shop by Category</h2>
+            <p class="slds-text-body_regular slds-text-color_weak">Discover our most popular product categories</p>
+        </div>
+
+        <!-- Loading State -->
+        <template lwc:if={isLoading}>
+            <div class="slds-grid slds-wrap slds-gutters_medium">
+                <template for:each={loadingSkeletons} for:item="skeleton">
+                    <div key={skeleton.id} class="slds-col slds-size_1-of-2 slds-medium-size_1-of-3 slds-large-size_1-of-4">
+                        <div class="category-card-skeleton slds-card">
+                            <div class="slds-card__body slds-card__body_inner">
+                                <div class="skeleton-image slds-m-bottom_small"></div>
+                                <div class="skeleton-title slds-m-bottom_x-small"></div>
+                                <div class="skeleton-count"></div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </template>
+
+        <!-- Categories Grid -->
+        <template lwc:else>
+            <div class="categories-grid slds-grid slds-wrap slds-gutters_medium" role="list">
+                <template for:each={displayedCategories} for:item="category">
+                    <div key={category.id}
+                         class="slds-col slds-size_1-of-2 slds-medium-size_1-of-3 slds-large-size_1-of-4"
+                         role="listitem">
+
+                        <!-- Category Card -->
+                        <div class="category-card slds-card slds-card_boundary"
+                             onclick={handleCategoryClick}
+                             onkeydown={handleCategoryKeydown}
+                             data-category-id={category.id}
+                             data-category-url={category.url}
+                             tabindex="0"
+                             role="button"
+                             aria-label={category.ariaLabel}>
+
+                            <div class="slds-card__header category-card-header">
+                                <!-- Category Image -->
+                                <div class="category-image-container">
+                                    <template lwc:if={category.imageUrl}>
+                                        <img src={category.imageUrl}
+                                             alt={category.imageAlt}
+                                             class="category-image"
+                                             loading="lazy"
+                                             onerror={handleImageError}
+                                             data-category-id={category.id}>
+                                    </template>
+                                    <template lwc:else>
+                                        <!-- Fallback icon for categories without images -->
+                                        <div class="category-fallback-icon">
+                                            <lightning-icon
+                                                icon-name={category.fallbackIcon}
+                                                size="large"
+                                                alternative-text={category.title}>
+                                            </lightning-icon>
+                                        </div>
+                                    </template>
+                                </div>
+
+                                <!-- Category Badge/Tag (optional) -->
+                                <template lwc:if={category.badge}>
+                                    <span class={category.badgeClass}>
+                                        {category.badge}
+                                    </span>
+                                </template>
+                            </div>
+
+                            <div class="slds-card__body slds-card__body_inner">
+                                <!-- Category Title -->
+                                <h3 class="slds-text-heading_small slds-truncate category-title">
+                                    {category.title}
+                                </h3>
+
+                                <!-- Product Count -->
+                                <p class="slds-text-body_small slds-text-color_weak category-count">
+                                    {category.productCountDisplay}
+                                </p>
+
+                                <!-- Optional Description -->
+                                <template lwc:if={category.description}>
+                                    <p class="slds-text-body_small slds-m-top_x-small category-description">
+                                        {category.description}
+                                    </p>
+                                </template>
+                            </div>
+
+                            <div class="slds-card__footer">
+                                <!-- View Category Button -->
+                                <lightning-button
+                                    label="View Products"
+                                    variant="base"
+                                    onclick={handleViewCategoryClick}
+                                    data-category-id={category.id}
+                                    data-category-url={category.url}
+                                    class="view-category-button">
+                                </lightning-button>
+
+                                <!-- Quick Action Buttons (optional) -->
+                                <template lwc:if={showQuickActions}>
+                                    <div class="quick-actions slds-m-top_x-small">
+                                        <lightning-button-icon
+                                            icon-name="utility:favorite"
+                                            variant="bare"
+                                            alternative-text="Add category to favorites"
+                                            title="Add to Favorites"
+                                            onclick={handleAddToFavorites}
+                                            data-category-id={category.id}
+                                            class="slds-m-right_x-small">
+                                        </lightning-button-icon>
+                                        <lightning-button-icon
+                                            icon-name="utility:share"
+                                            variant="bare"
+                                            alternative-text="Share category"
+                                            title="Share Category"
+                                            onclick={handleShareCategory}
+                                            data-category-id={category.id}>
+                                        </lightning-button-icon>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            <!-- View All Categories Button -->
+            <template lwc:if={hasMoreCategories}>
+                <div class="slds-text-align_center slds-m-top_large">
+                    <lightning-button
+                        label="View All Categories"
+                        variant="neutral"
+                        onclick={handleViewAllCategories}
+                        class="view-all-button">
+                    </lightning-button>
+                </div>
+            </template>
+        </template>
+
+        <!-- Empty State -->
+        <template lwc:if={showEmptyState}>
+            <div class="empty-state slds-text-align_center slds-p-vertical_xx-large">
+                <lightning-icon
+                    icon-name="utility:apps"
+                    size="large"
+                    class="slds-m-bottom_medium">
+                </lightning-icon>
+                <h3 class="slds-text-heading_medium slds-m-bottom_small">No Categories Available</h3>
+                <p class="slds-text-body_regular slds-text-color_weak">
+                    Categories are being updated. Please check back later.
+                </p>
+            </div>
+        </template>
+    </div>
+</template>

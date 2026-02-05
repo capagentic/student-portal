@@ -1,0 +1,271 @@
+<template>
+    <!-- Main footer container with responsive design -->
+    <footer class="ecommerce-footer slds-p-vertical_large slds-p-horizontal_medium" role="contentinfo" aria-label="Site footer">
+        <div class="slds-container_large slds-container_center">
+
+            <!-- Main footer content grid -->
+            <div class="slds-grid slds-wrap slds-gutters_large">
+
+                <!-- Company Information Section -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <div class="footer-section">
+                        <div class="slds-media slds-media_center slds-m-bottom_medium">
+                            <div class="slds-media__figure">
+                                <lightning-icon
+                                    icon-name="standard:store"
+                                    size="medium"
+                                    alternative-text="Company logo">
+                                </lightning-icon>
+                            </div>
+                            <div class="slds-media__body slds-p-left_small">
+                                <h2 class="slds-text-heading_medium slds-text-color_brand">
+                                    {companyName}
+                                </h2>
+                            </div>
+                        </div>
+
+                        <p class="slds-text-body_regular slds-text-color_weak slds-m-bottom_medium">
+                            {companyDescription}
+                        </p>
+
+                        <!-- Contact Information -->
+                        <address class="slds-not-italic">
+                            <div class="slds-m-bottom_small">
+                                <lightning-icon
+                                    icon-name="utility:location"
+                                    size="x-small"
+                                    class="slds-m-right_x-small">
+                                </lightning-icon>
+                                <span class="slds-text-body_small">{companyAddress}</span>
+                            </div>
+                            <div class="slds-m-bottom_small">
+                                <lightning-icon
+                                    icon-name="utility:phone_portrait"
+                                    size="x-small"
+                                    class="slds-m-right_x-small">
+                                </lightning-icon>
+                                <a href={phoneHref} class="slds-text-body_small footer-link">
+                                    {companyPhone}
+                                </a>
+                            </div>
+                            <div class="slds-m-bottom_small">
+                                <lightning-icon
+                                    icon-name="utility:email"
+                                    size="x-small"
+                                    class="slds-m-right_x-small">
+                                </lightning-icon>
+                                <a href={emailHref} class="slds-text-body_small footer-link">
+                                    {companyEmail}
+                                </a>
+                            </div>
+                        </address>
+                    </div>
+                </div>
+
+                <!-- Quick Links Section -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <div class="footer-section">
+                        <h3 class="slds-text-heading_small slds-m-bottom_medium">Quick Links</h3>
+                        <nav role="navigation" aria-label="Footer quick links">
+                            <ul class="slds-list_vertical slds-list_vertical-space" role="list">
+                                <template for:each={quickLinks} for:item="link">
+                                    <li class="slds-list__item" key={link.id} role="listitem">
+                                        <a href={link.url}
+                                           class="slds-text-body_regular footer-link"
+                                           onclick={handleQuickLinkClick}
+                                           data-link-id={link.id}
+                                           tabindex="0">
+                                            {link.label}
+                                        </a>
+                                    </li>
+                                </template>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Customer Service Section -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <div class="footer-section">
+                        <h3 class="slds-text-heading_small slds-m-bottom_medium">Customer Service</h3>
+                        <nav role="navigation" aria-label="Customer service links">
+                            <ul class="slds-list_vertical slds-list_vertical-space" role="list">
+                                <template for:each={customerServiceLinks} for:item="link">
+                                    <li class="slds-list__item" key={link.id} role="listitem">
+                                        <a href={link.url}
+                                           class="slds-text-body_regular footer-link"
+                                           onclick={handleServiceLinkClick}
+                                           data-link-id={link.id}
+                                           tabindex="0">
+                                            {link.label}
+                                        </a>
+                                    </li>
+                                </template>
+                            </ul>
+                        </nav>
+
+                        <!-- Operating Hours -->
+                        <div class="slds-m-top_medium slds-p-top_medium slds-border_top">
+                            <h4 class="slds-text-body_small slds-text-color_default slds-m-bottom_x-small">
+                                Customer Service Hours
+                            </h4>
+                            <p class="slds-text-body_small slds-text-color_weak">
+                                Monday - Friday: 9:00 AM - 6:00 PM<br>
+                                Saturday: 10:00 AM - 4:00 PM<br>
+                                Sunday: Closed
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Newsletter and Social Media Section -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-4">
+                    <div class="footer-section">
+                        <h3 class="slds-text-heading_small slds-m-bottom_medium">Stay Connected</h3>
+
+                        <!-- Newsletter Signup -->
+                        <div class="slds-m-bottom_large">
+                            <p class="slds-text-body_small slds-text-color_weak slds-m-bottom_small">
+                                Subscribe to our newsletter for the latest updates and exclusive offers.
+                            </p>
+
+                            <form class="newsletter-form" onsubmit={handleNewsletterSubmit}>
+                                <div class="slds-form-element">
+                                    <label class="slds-form-element__label slds-assistive-text" for="newsletter-email">
+                                        Email address for newsletter
+                                    </label>
+                                    <div class="slds-form-element__control">
+                                        <div class="slds-input-has-icon slds-input-has-icon_right">
+                                            <lightning-input
+                                                type="email"
+                                                name="newsletter-email"
+                                                placeholder="Enter your email"
+                                                value={newsletterEmail}
+                                                onchange={handleNewsletterEmailChange}
+                                                class="newsletter-input"
+                                                required
+                                                aria-describedby={newsletterErrorId}>
+                                            </lightning-input>
+                                            <lightning-button
+                                                type="submit"
+                                                label="Subscribe"
+                                                variant="brand"
+                                                class="newsletter-button slds-input__icon slds-input__icon_right"
+                                                disabled={isNewsletterSubmitting}>
+                                            </lightning-button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Newsletter validation message -->
+                                    <template lwc:if={newsletterError}>
+                                        <div id={newsletterErrorId}
+                                             class="slds-form-element__help slds-text-color_error"
+                                             role="alert"
+                                             aria-live="polite">
+                                            {newsletterError}
+                                        </div>
+                                    </template>
+
+                                    <template lwc:if={newsletterSuccess}>
+                                        <div class="slds-form-element__help slds-text-color_success"
+                                             role="alert"
+                                             aria-live="polite">
+                                            {newsletterSuccess}
+                                        </div>
+                                    </template>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Social Media Links -->
+                        <div class="social-media-section">
+                            <h4 class="slds-text-body_small slds-text-color_default slds-m-bottom_small">
+                                Follow Us
+                            </h4>
+                            <div class="slds-button-group" role="group" aria-label="Social media links">
+                                <template for:each={socialMediaLinks} for:item="social">
+                                    <a href={social.url}
+                                       key={social.id}
+                                       class="social-link slds-button slds-button_icon slds-button_icon-border"
+                                       target="_blank"
+                                       rel="noopener noreferrer"
+                                       aria-label={social.ariaLabel}
+                                       title={social.title}
+                                       onclick={handleSocialMediaClick}
+                                       data-social-id={social.id}>
+                                        <lightning-icon
+                                            icon-name={social.icon}
+                                            size="small"
+                                            alternative-text={social.altText}>
+                                        </lightning-icon>
+                                    </a>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom footer bar with legal links and copyright -->
+            <div class="slds-border_top slds-p-top_medium slds-m-top_large">
+                <div class="slds-grid slds-grid_vertical-align-center slds-wrap">
+
+                    <!-- Copyright and legal links -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_3-of-4">
+                        <div class="slds-grid slds-grid_vertical-align-center slds-wrap">
+                            <!-- Copyright notice -->
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_small slds-medium-m-bottom_none">
+                                <p class="slds-text-body_small slds-text-color_weak">
+                                    © {currentYear} {companyName}. All rights reserved.
+                                </p>
+                            </div>
+
+                            <!-- Legal links -->
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <nav role="navigation" aria-label="Legal and policy links">
+                                    <ul class="slds-list_horizontal slds-list_dotted legal-links" role="list">
+                                        <template for:each={legalLinks} for:item="link">
+                                            <li class="slds-list__item" key={link.id} role="listitem">
+                                                <a href={link.url}
+                                                   class="slds-text-body_small footer-link legal-link"
+                                                   onclick={handleLegalLinkClick}
+                                                   data-link-id={link.id}
+                                                   tabindex="0">
+                                                    {link.label}
+                                                </a>
+                                            </li>
+                                        </template>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment methods and certifications -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-4 slds-text-align_right slds-medium-text-align_right">
+                        <template lwc:if={showPaymentMethods}>
+                            <div class="payment-methods">
+                                <p class="slds-text-body_small slds-text-color_weak slds-m-bottom_x-small">
+                                    We Accept
+                                </p>
+                                <div class="slds-grid slds-grid_align-end slds-gutters_x-small">
+                                    <template for:each={paymentMethods} for:item="payment">
+                                        <div class="slds-col" key={payment.id}>
+                                            <lightning-icon
+                                                icon-name={payment.icon}
+                                                size="small"
+                                                alternative-text={payment.name}
+                                                title={payment.name}
+                                                class="payment-icon">
+                                            </lightning-icon>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</template>
