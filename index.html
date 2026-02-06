@@ -1,0 +1,2386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Behaviour Management Portal - Queensland Department of Education</title>
+
+    <!-- Salesforce Lightning Design System (SLDS) from CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/design-system/2.21.2/styles/salesforce-lightning-design-system.min.css">
+
+    <style>
+        :root {
+            --qld-navy: #003087;
+            --qld-gold: #FFB81C;
+            --success-green: #04844B;
+            --warning-orange: #FE9339;
+            --error-red: #C23934;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Salesforce Sans', Arial, sans-serif;
+            background-color: #f4f6f9;
+        }
+
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Global Header */
+        .global-header {
+            background: linear-gradient(135deg, var(--qld-navy) 0%, #1A4480 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .brand-logo {
+            width: 48px;
+            height: 48px;
+            background: var(--qld-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--qld-navy);
+            font-size: 1.2rem;
+        }
+
+        .brand-text h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .brand-text p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-item {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        /* Interface Views */
+        .interface-view {
+            display: none;
+        }
+
+        .interface-view.active {
+            display: block;
+        }
+
+        /* Loading States */
+        .loading-state {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--qld-navy);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Cards and Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--qld-navy);
+        }
+
+        .metric-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .metric-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--qld-navy);
+            line-height: 1;
+        }
+
+        .metric-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin: 0.25rem 0;
+        }
+
+        .metric-trend {
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .metric-trend.positive { color: var(--success-green); }
+        .metric-trend.negative { color: var(--error-red); }
+
+        /* Form Styles */
+        .form-container {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        .progress-bar {
+            background: #ddd;
+            height: 6px;
+            border-radius: 3px;
+            margin-bottom: 2rem;
+        }
+
+        .progress-fill {
+            background: var(--qld-navy);
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 0.25rem;
+            font-size: 1rem;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--qld-navy);
+            box-shadow: 0 0 0 2px rgba(0, 48, 135, 0.2);
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.25rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--qld-navy);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1A4480;
+        }
+
+        .btn-secondary {
+            background: var(--qld-gold);
+            color: var(--qld-navy);
+        }
+
+        .btn-secondary:hover {
+            background: #E6A619;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--qld-navy);
+            border: 2px solid var(--qld-navy);
+        }
+
+        .btn-outline:hover {
+            background: var(--qld-navy);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success-green);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning-orange);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--error-red);
+            color: white;
+        }
+
+        /* Tabs */
+        .tab-container {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .tab-list {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #ddd;
+            overflow-x: auto;
+        }
+
+        .tab-button {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            white-space: nowrap;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab-button:hover {
+            background: #e9ecef;
+        }
+
+        .tab-button.active {
+            background: white;
+            border-bottom-color: var(--qld-navy);
+            color: var(--qld-navy);
+        }
+
+        .tab-content {
+            padding: 2rem;
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* Status Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: #d1eddf;
+            color: #155724;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 1rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #ddd;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.75rem;
+            top: 1.5rem;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--qld-navy);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .header-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .tab-list {
+                flex-direction: column;
+            }
+        }
+
+        /* Utility Classes */
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .text-success { color: var(--success-green); }
+        .text-warning { color: var(--warning-orange); }
+        .text-danger { color: var(--error-red); }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 1.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mt-3 { margin-top: 1.5rem; }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        /* Progress Circles */
+        .progress-circle {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: conic-gradient(var(--qld-navy) 0deg, var(--qld-navy) calc(var(--progress) * 3.6deg), #e0e0e0 calc(var(--progress) * 3.6deg));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .progress-circle::before {
+            content: '';
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: white;
+        }
+
+        .progress-text {
+            position: relative;
+            z-index: 1;
+            font-weight: 600;
+            color: var(--qld-navy);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Global Header -->
+        <header class="global-header">
+            <div class="header-content">
+                <div class="brand-section">
+                    <div class="brand-logo">QDE</div>
+                    <div class="brand-text">
+                        <h1>Student Behaviour Management</h1>
+                        <p>Queensland Department of Education</p>
+                    </div>
+                </div>
+                <nav class="header-nav">
+                    <a href="#" class="nav-item active" data-view="school-dashboard">School Dashboard</a>
+                    <a href="#" class="nav-item" data-view="incident-form">Record Incident</a>
+                    <a href="#" class="nav-item" data-view="case-management">Case Management</a>
+                    <a href="#" class="nav-item" data-view="regional-dashboard">Regional Office</a>
+                    <a href="#" class="nav-item" data-view="parent-portal">Parent Portal</a>
+                </nav>
+                <div class="user-menu">
+                    <span>👤 John Smith</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- School Dashboard View -->
+            <div id="school-dashboard" class="interface-view active">
+                <div class="loading-state" id="dashboard-loading">
+                    <div class="loading-spinner"></div>
+                    <p>Loading dashboard data...</p>
+                </div>
+
+                <div id="dashboard-content" class="hidden">
+                    <h2 class="mb-3">School Dashboard</h2>
+
+                    <!-- Key Metrics -->
+                    <section class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-content">
+                                <div class="metric-icon" style="background: rgba(255, 184, 28, 0.2); color: var(--qld-gold);">⚠️</div>
+                                <div class="metric-data">
+                                    <div class="metric-value">24</div>
+                                    <div class="metric-label">Total Incidents</div>
+                                    <div class="metric-trend positive">↗ 12% from last month</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-content">
+                                <div class="metric-icon" style="background: rgba(255, 153, 57, 0.2); color: var(--warning-orange);">🕐</div>
+                                <div class="metric-data">
+                                    <div class="metric-value">7</div>
+                                    <div class="metric-label">Pending Cases</div>
+                                    <div class="metric-trend">3 urgent</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-content">
+                                <div class="metric-icon" style="background: rgba(4, 132, 75, 0.2); color: var(--success-green);">📋</div>
+                                <div class="metric-data">
+                                    <div class="metric-value">15</div>
+                                    <div class="metric-label">Active Care Plans</div>
+                                    <div class="metric-trend">5 updated this week</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="metric-card">
+                            <div class="metric-content">
+                                <div class="metric-icon" style="background: rgba(194, 57, 52, 0.2); color: var(--error-red);">🚫</div>
+                                <div class="metric-data">
+                                    <div class="metric-value">3</div>
+                                    <div class="metric-label">Suspensions/Exclusions</div>
+                                    <div class="metric-trend">2 active, 1 exclusions</div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Quick Actions and Recent Incidents -->
+                    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; margin-bottom: 2rem;">
+                        <!-- Quick Actions Panel -->
+                        <div class="form-container">
+                            <h3>Quick Actions</h3>
+                            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                <button class="btn btn-primary" onclick="showView('incident-form')">
+                                    ➕ Record New Incident
+                                </button>
+                                <button class="btn btn-outline" onclick="showStudentSearch()">
+                                    🔍 Student Search
+                                </button>
+                                <button class="btn btn-secondary">📊 Generate Reports</button>
+                                <button class="btn btn-outline">📋 Review Cases</button>
+                                <button class="btn btn-outline">🎯 Care Plan Review</button>
+                            </div>
+                        </div>
+
+                        <!-- Recent Incidents -->
+                        <div class="form-container">
+                            <h3>Recent Incidents</h3>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Type</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Sarah Johnson</td>
+                                        <td>Disruption</td>
+                                        <td>2024-01-15</td>
+                                        <td><span class="badge badge-warning">Pending</span></td>
+                                        <td><button class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">View</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Michael Chen</td>
+                                        <td>Physical Altercation</td>
+                                        <td>2024-01-14</td>
+                                        <td><span class="badge badge-danger">Urgent</span></td>
+                                        <td><button class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">View</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Emily Davis</td>
+                                        <td>Academic Misconduct</td>
+                                        <td>2024-01-13</td>
+                                        <td><span class="badge badge-success">Resolved</span></td>
+                                        <td><button class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">View</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Student Search Widget -->
+                    <div class="form-container">
+                        <h3>Student Search</h3>
+                        <div class="form-group">
+                            <input type="search" class="form-input" placeholder="Search students by name or ID..." onkeyup="performStudentSearch(this.value)">
+                        </div>
+                        <div id="search-results" class="mt-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Incident Recording Form View -->
+            <div id="incident-form" class="interface-view">
+                <div class="form-container">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <div>
+                            <h2>Record New Incident</h2>
+                            <p>Student Behaviour Management System</p>
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn btn-outline">💾 Save as Draft</button>
+                            <button class="btn" onclick="showView('school-dashboard')">✕ Cancel</button>
+                        </div>
+                    </div>
+
+                    <!-- Progress Indicator -->
+                    <div class="progress-bar mb-3">
+                        <div class="progress-fill" id="form-progress" style="width: 16.67%;"></div>
+                    </div>
+
+                    <!-- Step Navigation -->
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 2rem; font-size: 0.9rem;">
+                        <span class="text-primary" id="step-1-label">1. Student & Details</span>
+                        <span id="step-2-label">2. Description</span>
+                        <span id="step-3-label">3. Participants</span>
+                        <span id="step-4-label">4. Response</span>
+                        <span id="step-5-label">5. Follow-up</span>
+                        <span id="step-6-label">6. Review</span>
+                    </div>
+
+                    <!-- Form Steps -->
+                    <div class="form-steps">
+                        <!-- Step 1: Student Selection and Basic Details -->
+                        <div class="form-step active" id="step-1">
+                            <h3>Step 1: Student & Incident Details</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Select Student *</label>
+                                    <select class="form-select" required>
+                                        <option value="">Search and select student...</option>
+                                        <option value="student1">Sarah Johnson - Grade 8 - ID: 2024001</option>
+                                        <option value="student2">Michael Chen - Grade 9 - ID: 2024002</option>
+                                        <option value="student3">Emily Davis - Grade 7 - ID: 2024003</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Incident Date & Time *</label>
+                                    <input type="datetime-local" class="form-input" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Location *</label>
+                                    <select class="form-select" required>
+                                        <option value="">Select incident location</option>
+                                        <option value="classroom">Classroom</option>
+                                        <option value="playground">Playground</option>
+                                        <option value="cafeteria">Cafeteria</option>
+                                        <option value="hallway">Hallway</option>
+                                        <option value="library">Library</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Incident Classification *</label>
+                                    <select class="form-select" required>
+                                        <option value="">Select incident type</option>
+                                        <option value="disruption">Classroom Disruption</option>
+                                        <option value="physical">Physical Altercation</option>
+                                        <option value="verbal">Verbal Abuse</option>
+                                        <option value="academic">Academic Misconduct</option>
+                                        <option value="property">Property Damage</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Severity Level *</label>
+                                    <select class="form-select" required>
+                                        <option value="">Select severity</option>
+                                        <option value="minor">Minor</option>
+                                        <option value="moderate">Moderate</option>
+                                        <option value="major">Major</option>
+                                        <option value="severe">Severe</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Incident Description -->
+                        <div class="form-step" id="step-2">
+                            <h3>Step 2: Detailed Incident Description</h3>
+                            <div class="form-group mb-3">
+                                <label class="form-label">Incident Description *</label>
+                                <textarea class="form-textarea" rows="4" placeholder="Provide a detailed, objective description of what occurred..." required></textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Antecedents (What led to the incident?)</label>
+                                    <textarea class="form-textarea" rows="3" placeholder="Describe what happened before the incident..."></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Observed Behaviours</label>
+                                    <textarea class="form-textarea" rows="3" placeholder="Describe specific behaviours observed..."></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Environmental Factors</label>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem; margin-top: 0.5rem;">
+                                    <label><input type="checkbox"> High noise levels</label>
+                                    <label><input type="checkbox"> Crowded space</label>
+                                    <label><input type="checkbox"> Time pressure</label>
+                                    <label><input type="checkbox"> Transition period</label>
+                                    <label><input type="checkbox"> Peer influence</label>
+                                    <label><input type="checkbox"> Other</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Participants and Witnesses -->
+                        <div class="form-step" id="step-3">
+                            <h3>Step 3: Participants & Witnesses</h3>
+                            <div class="form-group mb-3">
+                                <label class="form-label">Other Students Involved</label>
+                                <select class="form-select">
+                                    <option value="">Add additional students...</option>
+                                    <option value="student1">Alice Brown - Grade 8</option>
+                                    <option value="student2">James Wilson - Grade 9</option>
+                                </select>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label class="form-label">Staff Members Present</label>
+                                <select class="form-select">
+                                    <option value="">Add staff members...</option>
+                                    <option value="staff1">Ms. Anderson - Teacher</option>
+                                    <option value="staff2">Mr. Thompson - Principal</option>
+                                </select>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label class="form-label">Witness Information</label>
+                                <textarea class="form-textarea" rows="3" placeholder="List any witnesses and their observations..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label><input type="checkbox"> Parents/Guardians have been notified</label>
+                                <div class="form-row mt-2" style="margin-left: 2rem;">
+                                    <div class="form-group">
+                                        <label class="form-label">Notification Date & Time</label>
+                                        <input type="datetime-local" class="form-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Notification Method</label>
+                                        <select class="form-select">
+                                            <option>Phone call</option>
+                                            <option>Email</option>
+                                            <option>In person</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Response and Actions -->
+                        <div class="form-step" id="step-4">
+                            <h3>Step 4: Immediate Response & Actions Taken</h3>
+                            <div class="form-group mb-3">
+                                <label class="form-label">Immediate Response *</label>
+                                <textarea class="form-textarea" rows="4" placeholder="Describe the immediate actions taken to address the situation..." required></textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Interventions Applied</label>
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.5rem; margin-top: 0.5rem;">
+                                        <label><input type="checkbox"> Verbal redirection</label>
+                                        <label><input type="checkbox"> Time out</label>
+                                        <label><input type="checkbox"> Counselling</label>
+                                        <label><input type="checkbox"> Peer mediation</label>
+                                        <label><input type="checkbox"> Behaviour plan review</label>
+                                        <label><input type="checkbox"> Other</label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Consequences Administered</label>
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.5rem; margin-top: 0.5rem;">
+                                        <label><input type="checkbox"> Detention</label>
+                                        <label><input type="checkbox"> Loss of privileges</label>
+                                        <label><input type="checkbox"> Restitution</label>
+                                        <label><input type="checkbox"> Suspension</label>
+                                        <label><input type="checkbox"> Community service</label>
+                                        <label><input type="checkbox"> Other</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Safety Measures Implemented</label>
+                                <textarea class="form-textarea" rows="3" placeholder="Detail any safety concerns or protective measures taken..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Step 5: Follow-up Actions -->
+                        <div class="form-step" id="step-5">
+                            <h3>Step 5: Follow-up Actions & Tasks</h3>
+                            <div class="form-group mb-3">
+                                <label class="form-label">Required Follow-up Actions</label>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem; margin-top: 0.5rem;">
+                                    <label><input type="checkbox"> Parent conference</label>
+                                    <label><input type="checkbox"> Behaviour plan development</label>
+                                    <label><input type="checkbox"> Counselling referral</label>
+                                    <label><input type="checkbox"> Academic support</label>
+                                    <label><input type="checkbox"> Peer mediation</label>
+                                    <label><input type="checkbox"> Other</label>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Follow-up Due Date</label>
+                                    <input type="date" class="form-input">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Assign To</label>
+                                    <select class="form-select">
+                                        <option value="">Select staff member...</option>
+                                        <option value="counselor">School Counselor</option>
+                                        <option value="principal">Principal</option>
+                                        <option value="teacher">Class Teacher</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Escalation Level</label>
+                                <select class="form-select">
+                                    <option value="none">No escalation required</option>
+                                    <option value="admin">School Administration</option>
+                                    <option value="district">District Office</option>
+                                    <option value="regional">Regional Office</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Step 6: Review and Submit -->
+                        <div class="form-step" id="step-6">
+                            <h3>Step 6: Review & Submit</h3>
+                            <div class="form-container" style="background: #f8f9fa;">
+                                <h4>Incident Summary</h4>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                                    <div><strong>Student:</strong> <span id="summary-student">Sarah Johnson</span></div>
+                                    <div><strong>Date & Time:</strong> <span id="summary-datetime">2024-01-15 10:30</span></div>
+                                    <div><strong>Location:</strong> <span id="summary-location">Classroom</span></div>
+                                    <div><strong>Type:</strong> <span id="summary-type">Disruption</span></div>
+                                    <div><strong>Severity:</strong> <span id="summary-severity" class="badge badge-warning">Moderate</span></div>
+                                    <div><strong>Escalation:</strong> <span id="summary-escalation">School Administration</span></div>
+                                </div>
+                            </div>
+                            <div class="form-group mt-3">
+                                <label class="form-label">Additional Submission Notes</label>
+                                <textarea class="form-textarea" rows="3" placeholder="Any additional notes or clarifications for this submission..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label><input type="checkbox" required> I confirm that the information provided is accurate and complete</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Footer -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #eee;">
+                        <button class="btn btn-outline" id="prev-btn" onclick="previousStep()" disabled>← Previous</button>
+                        <span id="step-indicator">Step 1 of 6</span>
+                        <button class="btn btn-primary" id="next-btn" onclick="nextStep()">Next →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Case Management View -->
+            <div id="case-management" class="interface-view">
+                <div class="form-container mb-3">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div style="width: 60px; height: 60px; background: var(--qld-navy); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">👤</div>
+                            <div>
+                                <h2 style="margin: 0;">Sarah Johnson</h2>
+                                <p style="margin: 0; color: #666;">ID: 2024001 | Grade 8 | Active Student</p>
+                                <p style="margin: 0; font-size: 0.9rem;">DOB: 2010-03-15 | Age: 14 | Parent: Jennifer Johnson</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn btn-primary">New Incident</button>
+                            <button class="btn btn-outline">Contact Parent</button>
+                            <button class="btn btn-secondary">Generate Report</button>
+                        </div>
+                    </div>
+
+                    <!-- Alert Flags -->
+                    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                        <span class="badge badge-warning">⚠️ ADHD Support Plan</span>
+                        <span class="badge badge-info">📋 Active Intervention</span>
+                    </div>
+                </div>
+
+                <!-- Tabbed Interface -->
+                <div class="tab-container">
+                    <div class="tab-list">
+                        <button class="tab-button active" onclick="showTab('behavior-timeline')">Behaviour Timeline</button>
+                        <button class="tab-button" onclick="showTab('interventions')">Active Interventions</button>
+                        <button class="tab-button" onclick="showTab('history')">Incident History</button>
+                        <button class="tab-button" onclick="showTab('services')">Support Services</button>
+                        <button class="tab-button" onclick="showTab('communications')">Communications</button>
+                    </div>
+
+                    <div class="tab-content">
+                        <!-- Behaviour Timeline Tab -->
+                        <div class="tab-panel active" id="behavior-timeline">
+                            <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 2rem;">
+                                <h3>Behaviour History</h3>
+                                <div style="display: flex; gap: 1rem;">
+                                    <select class="form-select" style="width: auto;">
+                                        <option>All Types</option>
+                                        <option>Incidents Only</option>
+                                        <option>Positive Events</option>
+                                    </select>
+                                    <input type="date" class="form-input" style="width: auto;" placeholder="From Date">
+                                </div>
+                            </div>
+
+                            <div class="timeline">
+                                <div class="timeline-item">
+                                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                                        <div>
+                                            <h4 style="margin: 0 0 0.5rem 0; color: var(--qld-navy);">Classroom Disruption</h4>
+                                            <p style="margin: 0 0 1rem 0;">Student was repeatedly talking during math lesson despite multiple redirections.</p>
+                                            <div style="display: flex; gap: 1rem; font-size: 0.9rem; color: #666;">
+                                                <span class="badge badge-warning">Moderate</span>
+                                                <span>Staff: Ms. Anderson</span>
+                                                <span>Intervention: Time out</span>
+                                            </div>
+                                        </div>
+                                        <div style="text-align: right;">
+                                            <div style="font-weight: 600;">Jan 15, 2024</div>
+                                            <div style="font-size: 0.9rem; color: #666;">10:30 AM</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="timeline-item" style="border-left: 4px solid var(--success-green);">
+                                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                                        <div>
+                                            <h4 style="margin: 0 0 0.5rem 0; color: var(--success-green);">Positive Behavior Recognition</h4>
+                                            <p style="margin: 0 0 1rem 0;">Helped a classmate with assignment and showed excellent cooperation.</p>
+                                            <div style="display: flex; gap: 1rem; font-size: 0.9rem; color: #666;">
+                                                <span class="badge badge-success">Positive</span>
+                                                <span>Staff: Mr. Wilson</span>
+                                            </div>
+                                        </div>
+                                        <div style="text-align: right;">
+                                            <div style="font-weight: 600;">Jan 12, 2024</div>
+                                            <div style="font-size: 0.9rem; color: #666;">2:15 PM</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="timeline-item">
+                                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                                        <div>
+                                            <h4 style="margin: 0 0 0.5rem 0; color: var(--qld-navy);">Verbal Altercation</h4>
+                                            <p style="margin: 0 0 1rem 0;">Argument with peer during lunch break escalated to raised voices.</p>
+                                            <div style="display: flex; gap: 1rem; font-size: 0.9rem; color: #666;">
+                                                <span class="badge badge-warning">Minor</span>
+                                                <span>Staff: Ms. Roberts</span>
+                                                <span>Intervention: Peer mediation</span>
+                                            </div>
+                                        </div>
+                                        <div style="text-align: right;">
+                                            <div style="font-weight: 600;">Jan 8, 2024</div>
+                                            <div style="font-size: 0.9rem; color: #666;">12:45 PM</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Active Interventions Tab -->
+                        <div class="tab-panel" id="interventions">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                                <h3>Current Interventions & Support</h3>
+                                <button class="btn btn-primary">Add Intervention</button>
+                            </div>
+
+                            <!-- Active Care Plan -->
+                            <div class="form-container mb-3">
+                                <h4>Active Care Plan</h4>
+                                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+                                    <div>
+                                        <h5 style="color: var(--qld-navy);">ADHD Support Plan</h5>
+                                        <p>Provide structured environment and frequent breaks to support student's learning needs and reduce disruptive behaviors.</p>
+                                        <div style="display: flex; gap: 2rem; font-size: 0.9rem; color: #666;">
+                                            <span>Start: Sep 1, 2023</span>
+                                            <span>Review Due: Mar 1, 2024</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h5>Goal Progress</h5>
+                                        <div style="margin-bottom: 1rem;">
+                                            <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 0.25rem;">
+                                                <span>Focus & Attention</span>
+                                                <span>75%</span>
+                                            </div>
+                                            <div style="background: #ddd; height: 6px; border-radius: 3px;">
+                                                <div style="background: var(--success-green); height: 100%; width: 75%; border-radius: 3px;"></div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 0.25rem;">
+                                                <span>Social Interaction</span>
+                                                <span>60%</span>
+                                            </div>
+                                            <div style="background: #ddd; height: 6px; border-radius: 3px;">
+                                                <div style="background: var(--warning-orange); height: 100%; width: 60%; border-radius: 3px;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Active Interventions List -->
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                                <div class="form-container">
+                                    <h5>Movement Breaks</h5>
+                                    <p>Scheduled 5-minute movement breaks every 20 minutes during class.</p>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+                                        <div style="font-size: 0.9rem; color: #666;">
+                                            <div>Start: Jan 8, 2024</div>
+                                            <div>Frequency: Every 20 min</div>
+                                        </div>
+                                        <div>
+                                            <div style="font-size: 0.9rem; margin-bottom: 0.25rem;">80% Complete</div>
+                                            <div style="background: #ddd; height: 4px; border-radius: 2px; width: 100px;">
+                                                <div style="background: var(--success-green); height: 100%; width: 80%; border-radius: 2px;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-container">
+                                    <h5>Peer Buddy System</h5>
+                                    <p>Paired with responsible peer to provide support and positive role modeling.</p>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+                                        <div style="font-size: 0.9rem; color: #666;">
+                                            <div>Start: Jan 1, 2024</div>
+                                            <div>Buddy: Alex Thompson</div>
+                                        </div>
+                                        <div>
+                                            <div style="font-size: 0.9rem; margin-bottom: 0.25rem;">65% Complete</div>
+                                            <div style="background: #ddd; height: 4px; border-radius: 2px; width: 100px;">
+                                                <div style="background: var(--warning-orange); height: 100%; width: 65%; border-radius: 2px;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Incident History Tab -->
+                        <div class="tab-panel" id="history">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                                <h3>All Incidents</h3>
+                                <div style="display: flex; gap: 1rem;">
+                                    <input type="search" class="form-input" placeholder="Search incidents..." style="width: 250px;">
+                                    <select class="form-select" style="width: auto;">
+                                        <option>All Statuses</option>
+                                        <option>Open</option>
+                                        <option>Resolved</option>
+                                        <option>Under Review</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Description</th>
+                                        <th>Severity</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Jan 15, 2024</td>
+                                        <td>Disruption</td>
+                                        <td>Repeated talking during math lesson</td>
+                                        <td><span class="badge badge-warning">Moderate</span></td>
+                                        <td><span class="badge badge-success">Resolved</span></td>
+                                        <td><button class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">View</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Jan 8, 2024</td>
+                                        <td>Verbal Altercation</td>
+                                        <td>Argument with peer during lunch</td>
+                                        <td><span class="badge badge-info">Minor</span></td>
+                                        <td><span class="badge badge-success">Resolved</span></td>
+                                        <td><button class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">View</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Dec 20, 2023</td>
+                                        <td>Physical Altercation</td>
+                                        <td>Pushed another student in hallway</td>
+                                        <td><span class="badge badge-danger">Major</span></td>
+                                        <td><span class="badge badge-success">Resolved</span></td>
+                                        <td><button class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">View</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Support Services Tab -->
+                        <div class="tab-panel" id="services">
+                            <h3>Support Services & Resources</h3>
+
+                            <!-- Academic Performance Correlation -->
+                            <div class="form-container mb-3">
+                                <h4>Academic Performance Correlation</h4>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+                                    <div class="text-center">
+                                        <div style="font-size: 2rem; font-weight: 700; color: var(--qld-navy);">3.2</div>
+                                        <div style="color: #666;">Current GPA</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div style="font-size: 2rem; font-weight: 700; color: var(--warning-orange);">88%</div>
+                                        <div style="color: #666;">Attendance</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div style="font-size: 2rem; font-weight: 700; color: var(--error-red);">2</div>
+                                        <div style="color: #666;">At-Risk Subjects</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h5>Behavioral-Academic Insights</h5>
+                                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                            <span style="color: var(--warning-orange);">⚠️</span>
+                                            <span>Math performance correlates with increased behavioral incidents</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                            <span style="color: var(--success-green);">✅</span>
+                                            <span>Strong performance in creative subjects with minimal issues</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Current Support Services -->
+                            <h4>Current Support Services</h4>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+                                <div class="form-container">
+                                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                        <div style="font-size: 1.5rem;">🧠</div>
+                                        <div>
+                                            <h5 style="margin: 0;">School Counseling</h5>
+                                            <span class="badge badge-success">Active</span>
+                                        </div>
+                                    </div>
+                                    <p>Individual counseling sessions focused on coping strategies and emotional regulation.</p>
+                                    <div style="font-size: 0.9rem; color: #666;">
+                                        <div>Provider: Ms. Taylor</div>
+                                        <div>Next Session: Jan 18, 2024</div>
+                                        <div>Frequency: Weekly</div>
+                                    </div>
+                                </div>
+
+                                <div class="form-container">
+                                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                        <div style="font-size: 1.5rem;">📚</div>
+                                        <div>
+                                            <h5 style="margin: 0;">Learning Support</h5>
+                                            <span class="badge badge-success">Active</span>
+                                        </div>
+                                    </div>
+                                    <p>Additional academic support in mathematics and organizational skills.</p>
+                                    <div style="font-size: 0.9rem; color: #666;">
+                                        <div>Provider: Mr. Davis</div>
+                                        <div>Next Session: Jan 17, 2024</div>
+                                        <div>Frequency: 3x weekly</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Communications Tab -->
+                        <div class="tab-panel" id="communications">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                                <h3>Parent & Staff Communications</h3>
+                                <button class="btn btn-primary">New Communication</button>
+                            </div>
+
+                            <!-- Communication Statistics -->
+                            <div class="form-container mb-3">
+                                <h4>Communication Summary</h4>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 2rem;">
+                                    <div class="text-center">
+                                        <div style="font-size: 2rem; font-weight: 700; color: var(--qld-navy);">23</div>
+                                        <div style="color: #666;">Total Communications</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div style="font-size: 2rem; font-weight: 700; color: var(--success-green);">18</div>
+                                        <div style="color: #666;">Parent Communications</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div style="font-size: 1.2rem; font-weight: 700; color: var(--qld-navy);">Jan 15</div>
+                                        <div style="color: #666;">Last Parent Contact</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div style="font-size: 2rem; font-weight: 700; color: var(--success-green);">94%</div>
+                                        <div style="color: #666;">Response Rate</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Communications Timeline -->
+                            <h4>Recent Communications</h4>
+                            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                <div class="form-container">
+                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                                        <div>
+                                            <h5 style="margin: 0 0 0.5rem 0;">Incident Follow-up Discussion</h5>
+                                            <div style="display: flex; align-items: center; gap: 1rem; font-size: 0.9rem; color: #666;">
+                                                <span>📧 Email</span>
+                                                <span>To: Jennifer Johnson (Parent)</span>
+                                                <span>Jan 15, 2024</span>
+                                            </div>
+                                        </div>
+                                        <span class="badge badge-success">Responded</span>
+                                    </div>
+                                    <p>Discussion about today's classroom disruption incident and strategies for improvement.</p>
+                                    <div style="display: flex; gap: 1rem;">
+                                        <button class="btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">View Full</button>
+                                    </div>
+                                </div>
+
+                                <div class="form-container">
+                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                                        <div>
+                                            <h5 style="margin: 0 0 0.5rem 0;">Care Plan Review Meeting</h5>
+                                            <div style="display: flex; align-items: center; gap: 1rem; font-size: 0.9rem; color: #666;">
+                                                <span>👥 In Person</span>
+                                                <span>With: Parents, Counselor, Principal</span>
+                                                <span>Jan 10, 2024</span>
+                                            </div>
+                                        </div>
+                                        <span class="badge badge-info">Completed</span>
+                                    </div>
+                                    <p>Quarterly review of ADHD support plan and discussion of academic progress.</p>
+                                    <div style="display: flex; gap: 1rem;">
+                                        <button class="btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">View Full</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Regional Office Dashboard View -->
+            <div id="regional-dashboard" class="interface-view">
+                <h2 class="mb-3">Regional Office Dashboard</h2>
+                <p class="mb-3" style="color: #666;">Queensland Department of Education - Regional Management</p>
+
+                <!-- Executive Metrics -->
+                <section class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-content">
+                            <div class="metric-icon" style="background: rgba(194, 57, 52, 0.2); color: var(--error-red);">⚡</div>
+                            <div class="metric-data">
+                                <div class="metric-value">47</div>
+                                <div class="metric-label">High Priority Cases</div>
+                                <div class="metric-trend negative">↗ 8% vs last month</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-content">
+                            <div class="metric-icon" style="background: rgba(4, 132, 75, 0.2); color: var(--success-green);">📈</div>
+                            <div class="metric-data">
+                                <div class="metric-value">87%</div>
+                                <div class="metric-label">Regional Performance Score</div>
+                                <div class="metric-trend">Target: 85%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-content">
+                            <div class="metric-icon" style="background: rgba(0, 48, 135, 0.2); color: var(--qld-navy);">🛡️</div>
+                            <div class="metric-data">
+                                <div class="metric-value">92%</div>
+                                <div class="metric-label">Policy Compliance</div>
+                                <div class="metric-trend">3 schools need attention</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-content">
+                            <div class="metric-icon" style="background: rgba(255, 184, 28, 0.2); color: var(--qld-gold);">⏱️</div>
+                            <div class="metric-data">
+                                <div class="metric-value">18h</div>
+                                <div class="metric-label">Avg Response Time</div>
+                                <div class="metric-trend text-success">Target: ≤24h</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Main Dashboard Content -->
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+                    <!-- Case Queue Management -->
+                    <div class="form-container">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h3>Case Queue Management</h3>
+                            <button class="btn btn-outline">Export Queue</button>
+                        </div>
+
+                        <!-- Filter Controls -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                            <select class="form-select">
+                                <option>All Priorities</option>
+                                <option>High Priority</option>
+                                <option>Medium Priority</option>
+                                <option>Low Priority</option>
+                            </select>
+                            <select class="form-select">
+                                <option>All Districts</option>
+                                <option>North Brisbane</option>
+                                <option>South Brisbane</option>
+                                <option>Gold Coast</option>
+                            </select>
+                            <input type="search" class="form-input" placeholder="Search cases...">
+                        </div>
+
+                        <!-- Case Queue Table -->
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Case ID</th>
+                                    <th>Student</th>
+                                    <th>School</th>
+                                    <th>Type</th>
+                                    <th>Priority</th>
+                                    <th>Submitted</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr onclick="selectCase('case001')" style="cursor: pointer;">
+                                    <td>BRC-2024-001</td>
+                                    <td>Sarah Johnson</td>
+                                    <td>Brisbane High School</td>
+                                    <td>Suspension Review</td>
+                                    <td><span class="badge badge-danger">High</span></td>
+                                    <td>Jan 15, 2024</td>
+                                    <td><button class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">Review</button></td>
+                                </tr>
+                                <tr onclick="selectCase('case002')" style="cursor: pointer;">
+                                    <td>GC-2024-002</td>
+                                    <td>Michael Chen</td>
+                                    <td>Gold Coast Primary</td>
+                                    <td>Appeals Process</td>
+                                    <td><span class="badge badge-warning">Medium</span></td>
+                                    <td>Jan 14, 2024</td>
+                                    <td><button class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">Review</button></td>
+                                </tr>
+                                <tr onclick="selectCase('case003')" style="cursor: pointer;">
+                                    <td>NB-2024-003</td>
+                                    <td>Emily Davis</td>
+                                    <td>North Brisbane College</td>
+                                    <td>Care Plan Review</td>
+                                    <td><span class="badge badge-info">Low</span></td>
+                                    <td>Jan 13, 2024</td>
+                                    <td><button class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">Review</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Case Review Panel -->
+                    <div class="form-container">
+                        <h3>Case Review Panel</h3>
+                        <div id="case-review-content">
+                            <div class="text-center" style="padding: 2rem; color: #666;">
+                                <div style="font-size: 3rem; margin-bottom: 1rem;">👁️</div>
+                                <p>Select a case from the queue to begin review</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Section -->
+                <div class="form-container mt-3">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h3>Regional Analytics</h3>
+                        <div style="display: flex; gap: 1rem;">
+                            <select class="form-select" style="width: auto;">
+                                <option>Last 30 Days</option>
+                                <option>Last 90 Days</option>
+                                <option>Last Year</option>
+                            </select>
+                            <button class="btn btn-outline">Export Data</button>
+                        </div>
+                    </div>
+
+                    <!-- Chart Placeholder -->
+                    <div style="background: #f8f9fa; border: 2px dashed #ddd; border-radius: 0.5rem; padding: 3rem; text-center; margin-bottom: 2rem;">
+                        <div style="font-size: 3rem; color: #999; margin-bottom: 1rem;">📊</div>
+                        <p style="color: #666; margin: 0;">Interactive analytics charts would appear here</p>
+                        <p style="color: #999; margin: 0; font-size: 0.9rem;">Showing trends for Last 30 Days</p>
+                    </div>
+
+                    <!-- Analytics Summary -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem;">
+                        <div class="text-center">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--qld-navy);">342</div>
+                            <div style="color: #666;">Total Cases</div>
+                        </div>
+                        <div class="text-center">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--success-green);">5.2</div>
+                            <div style="color: #666;">Avg Resolution (days)</div>
+                        </div>
+                        <div class="text-center">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--qld-gold);">91%</div>
+                            <div style="color: #666;">Satisfaction Score</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Communication & Compliance -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
+                    <div class="form-container">
+                        <h3>System Notifications</h3>
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div style="padding: 1rem; background: #fff3cd; border-left: 4px solid var(--warning-orange); border-radius: 0.25rem;">
+                                <div style="font-weight: 600;">⚠️ Policy Update Required</div>
+                                <div style="font-size: 0.9rem; color: #856404; margin-top: 0.25rem;">Brisbane High School needs to update behavior policy</div>
+                                <div style="font-size: 0.8rem; color: #999; margin-top: 0.5rem;">2 hours ago</div>
+                            </div>
+                            <div style="padding: 1rem; background: #d1ecf1; border-left: 4px solid #0c5460; border-radius: 0.25rem;">
+                                <div style="font-weight: 600;">ℹ️ System Maintenance</div>
+                                <div style="font-size: 0.9rem; color: #0c5460; margin-top: 0.25rem;">Scheduled maintenance this weekend</div>
+                                <div style="font-size: 0.8rem; color: #999; margin-top: 0.5rem;">1 day ago</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-container">
+                        <h3>Compliance Monitoring</h3>
+                        <div style="margin-bottom: 1.5rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                <span>Overall Compliance</span>
+                                <span style="font-weight: 600;">92%</span>
+                            </div>
+                            <div style="background: #e0e0e0; height: 8px; border-radius: 4px;">
+                                <div style="background: var(--success-green); height: 100%; width: 92%; border-radius: 4px;"></div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: #f8d7da; border-radius: 0.25rem;">
+                                <span style="font-size: 0.9rem;">Gold Coast Primary</span>
+                                <span style="font-size: 0.8rem; color: #721c24;">Needs Review</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: #fff3cd; border-radius: 0.25rem;">
+                                <span style="font-size: 0.9rem;">Brisbane Secondary</span>
+                                <span style="font-size: 0.8rem; color: #856404;">Pending Update</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parent/Student Portal View -->
+            <div id="parent-portal" class="interface-view">
+                <div class="form-container mb-3">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h2 style="margin: 0;">Welcome, Jennifer Johnson!</h2>
+                            <p style="margin: 0; color: #666;">Here's an update on Sarah's progress and school activities.</p>
+                        </div>
+                        <button class="btn btn-primary">Quick Check-in</button>
+                    </div>
+                </div>
+
+                <!-- Student Overview Card -->
+                <div class="form-container mb-3">
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div style="width: 60px; height: 60px; background: var(--qld-navy); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">👤</div>
+                        <div>
+                            <h3 style="margin: 0;">Sarah Johnson</h3>
+                            <p style="margin: 0; color: #666;">Grade 8 • Brisbane High School</p>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 2rem;">
+                        <div class="text-center">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--success-green);">B+</div>
+                            <div style="color: #666;">Behavior Score</div>
+                        </div>
+                        <div class="text-center">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--qld-navy);">88%</div>
+                            <div style="color: #666;">Attendance</div>
+                        </div>
+                        <div class="text-center">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--warning-orange);">2</div>
+                            <div style="color: #666;">Recent Incidents</div>
+                        </div>
+                    </div>
+
+                    <!-- Student Alerts -->
+                    <div style="margin-top: 1.5rem;">
+                        <div style="display: flex; gap: 1rem;">
+                            <span class="badge" style="background: #e7f3ff; color: #0066cc;">📋 Active Care Plan</span>
+                            <span class="badge" style="background: #fff3e0; color: #e65100;">⚠️ Needs Support in Math</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Tabs -->
+                <div class="tab-container">
+                    <div class="tab-list">
+                        <button class="tab-button active" onclick="showTab('parent-behavior')">Behavior & Progress</button>
+                        <button class="tab-button" onclick="showTab('parent-communications')">Communications</button>
+                        <button class="tab-button" onclick="showTab('parent-appeals')">Appeals & Support</button>
+                        <button class="tab-button" onclick="showTab('parent-progress')">Progress Tracking</button>
+                    </div>
+
+                    <div class="tab-content">
+                        <!-- Behavior Information Tab -->
+                        <div class="tab-panel active" id="parent-behavior">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                                <h3>Behavior Information</h3>
+                                <button class="btn btn-outline">Request Meeting</button>
+                            </div>
+
+                            <!-- Recent Progress -->
+                            <div class="form-container mb-3">
+                                <h4>Recent Progress</h4>
+                                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem;">
+                                    <div class="text-center">
+                                        <div style="font-size: 2rem; font-weight: 700; color: var(--success-green); margin-bottom: 0.5rem;">+15%</div>
+                                        <div style="color: #666;">Improvement This Month</div>
+                                    </div>
+                                    <div>
+                                        <p>Sarah has shown significant improvement in classroom focus and participation. She's been successfully using the movement breaks and peer buddy system.</p>
+                                    </div>
+                                </div>
+
+                                <!-- Positive Behaviors -->
+                                <div style="margin-top: 2rem;">
+                                    <h5>Positive Behaviors Recognized</h5>
+                                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                        <div style="display: flex; justify-content: space-between; padding: 0.75rem; background: #d1eddf; border-radius: 0.25rem; border-left: 4px solid var(--success-green);">
+                                            <span>Excellent cooperation with classmate</span>
+                                            <span style="font-size: 0.9rem; color: #666;">Jan 12, 2024</span>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; padding: 0.75rem; background: #d1eddf; border-radius: 0.25rem; border-left: 4px solid var(--success-green);">
+                                            <span>Completed all homework on time this week</span>
+                                            <span style="font-size: 0.9rem; color: #666;">Jan 10, 2024</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Areas for Growth -->
+                                <div style="margin-top: 2rem;">
+                                    <h5>Areas for Growth & Support</h5>
+                                    <div style="padding: 1rem; background: #fff3e0; border-radius: 0.25rem; border-left: 4px solid var(--warning-orange);">
+                                        <div style="font-weight: 600; margin-bottom: 0.5rem;">Math Classroom Focus</div>
+                                        <p style="margin: 0 0 0.5rem 0;">Sarah sometimes struggles to maintain attention during math lessons, particularly with word problems.</p>
+                                        <p style="margin: 0; font-weight: 500; color: #e65100;">Support Strategy: Implementing visual aids and shorter problem sets with frequent breaks</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Recent Incidents (Family-Appropriate) -->
+                            <h4>Recent Incidents (Summary)</h4>
+                            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                <div class="form-container">
+                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                                        <div>
+                                            <h5 style="margin: 0;">Classroom Discussion</h5>
+                                            <span class="badge badge-info">Learning Opportunity</span>
+                                        </div>
+                                        <span style="color: #666;">Jan 15, 2024</span>
+                                    </div>
+                                    <p>Sarah had difficulty staying focused during a math lesson and needed some extra support. We used this as an opportunity to practice the coping strategies from her care plan.</p>
+                                    <div><strong>Resolution:</strong> Extra practice time scheduled, strategies reinforced</div>
+                                    <div style="margin-top: 1rem;">
+                                        <button class="btn" style="padding: 0.5rem 1rem; font-size: 0.9rem; margin-right: 1rem;">View Details</button>
+                                        <button class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Discuss with Teacher</button>
+                                    </div>
+                                </div>
+
+                                <div class="form-container">
+                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                                        <div>
+                                            <h5 style="margin: 0;">Peer Interaction</h5>
+                                            <span class="badge badge-warning">Minor</span>
+                                        </div>
+                                        <span style="color: #666;">Jan 8, 2024</span>
+                                    </div>
+                                    <p>Sarah and another student had a disagreement during lunch break that required teacher intervention to resolve peacefully.</p>
+                                    <div><strong>Resolution:</strong> Both students participated in peer mediation and resolved the conflict</div>
+                                    <div style="margin-top: 1rem;">
+                                        <button class="btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">View Details</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Communications Tab -->
+                        <div class="tab-panel" id="parent-communications">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                                <h3>Messages & Updates</h3>
+                                <button class="btn btn-primary">New Message</button>
+                            </div>
+
+                            <!-- Message Categories -->
+                            <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                                <button class="btn btn-outline active">All Messages</button>
+                                <button class="btn">Urgent</button>
+                                <button class="btn">Academic</button>
+                                <button class="btn">Behavioral</button>
+                            </div>
+
+                            <!-- Messages List -->
+                            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                <div class="form-container" style="border-left: 4px solid var(--qld-navy);">
+                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                                        <div>
+                                            <h5 style="margin: 0;">Follow-up: Classroom Incident Discussion</h5>
+                                            <div style="font-size: 0.9rem; color: #666; margin-top: 0.25rem;">
+                                                From: Ms. Anderson (Math Teacher) • Jan 15, 2024
+                                            </div>
+                                        </div>
+                                        <span class="badge badge-success">Read</span>
+                                    </div>
+                                    <p>Hi Jennifer, I wanted to follow up on today's incident with Sarah during math class. She responded well to the intervention strategies...</p>
+                                    <div style="margin-top: 1rem;">
+                                        <button class="btn" style="padding: 0.5rem 1rem; font-size: 0.9rem; margin-right: 1rem;">Read Full</button>
+                                        <button class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Reply</button>
+                                    </div>
+                                </div>
+
+                                <div class="form-container" style="border-left: 4px solid var(--warning-orange);">
+                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                                        <div>
+                                            <h5 style="margin: 0;">Care Plan Review Reminder</h5>
+                                            <div style="font-size: 0.9rem; color: #666; margin-top: 0.25rem;">
+                                                From: School Administration • Jan 12, 2024
+                                            </div>
+                                            <span class="badge badge-warning" style="margin-top: 0.5rem;">Response Needed</span>
+                                        </div>
+                                        <span class="badge badge-warning">Unread</span>
+                                    </div>
+                                    <p>Sarah's quarterly care plan review is scheduled for next week. Please confirm your availability for the meeting...</p>
+                                    <div style="margin-top: 1rem;">
+                                        <button class="btn" style="padding: 0.5rem 1rem; font-size: 0.9rem; margin-right: 1rem;">Read Full</button>
+                                        <button class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Reply</button>
+                                    </div>
+                                </div>
+
+                                <div class="form-container">
+                                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                                        <div>
+                                            <h5 style="margin: 0;">Positive Behavior Recognition</h5>
+                                            <div style="font-size: 0.9rem; color: #666; margin-top: 0.25rem;">
+                                                From: Ms. Taylor (School Counselor) • Jan 10, 2024
+                                            </div>
+                                        </div>
+                                        <span class="badge badge-success">Read</span>
+                                    </div>
+                                    <p>I wanted to share some wonderful news about Sarah's progress with her peer relationships and classroom participation...</p>
+                                    <div style="margin-top: 1rem;">
+                                        <button class="btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Read Full</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Appeals Process Tab -->
+                        <div class="tab-panel" id="parent-appeals">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                                <h3>Appeals Process & Support</h3>
+                                <button class="btn btn-primary">Start New Appeal</button>
+                            </div>
+
+                            <!-- Appeals Process Information -->
+                            <div class="form-container mb-3">
+                                <h4>Understanding the Appeals Process</h4>
+                                <p style="margin-bottom: 2rem;">If you disagree with a school decision, you have the right to request a review. We're here to help you navigate this process with clear guidance and support.</p>
+
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+                                    <div style="text-align: center;">
+                                        <div style="width: 50px; height: 50px; background: var(--qld-navy); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; margin: 0 auto 1rem;">1</div>
+                                        <h5>Submit Appeal</h5>
+                                        <p style="color: #666;">Complete the appeals form with relevant details</p>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <div style="width: 50px; height: 50px; background: var(--qld-navy); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; margin: 0 auto 1rem;">2</div>
+                                        <h5>Review Process</h5>
+                                        <p style="color: #666;">Regional office reviews your appeal within 5 business days</p>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <div style="width: 50px; height: 50px; background: var(--qld-navy); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; margin: 0 auto 1rem;">3</div>
+                                        <h5>Decision</h5>
+                                        <p style="color: #666;">You'll receive a written decision with next steps</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Support Resources -->
+                            <h4>Support Resources</h4>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+                                <div class="form-container">
+                                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                        <div style="font-size: 2rem;">📞</div>
+                                        <h5 style="margin: 0;">Parent Support Hotline</h5>
+                                    </div>
+                                    <p>Free confidential support and guidance for parents navigating school processes.</p>
+                                    <button class="btn btn-outline">Call 1800-PARENT</button>
+                                </div>
+
+                                <div class="form-container">
+                                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                        <div style="font-size: 2rem;">📚</div>
+                                        <h5 style="margin: 0;">Resource Library</h5>
+                                    </div>
+                                    <p>Access guides, forms, and information about your rights and school policies.</p>
+                                    <button class="btn btn-outline">Browse Resources</button>
+                                </div>
+
+                                <div class="form-container">
+                                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                        <div style="font-size: 2rem;">👥</div>
+                                        <h5 style="margin: 0;">Parent Advocate</h5>
+                                    </div>
+                                    <p>Connect with trained parent advocates who can provide support during meetings.</p>
+                                    <button class="btn btn-outline">Request Advocate</button>
+                                </div>
+
+                                <div class="form-container">
+                                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                        <div style="font-size: 2rem;">🌐</div>
+                                        <h5 style="margin: 0;">Online Workshop</h5>
+                                    </div>
+                                    <p>Join monthly online workshops about understanding school policies and processes.</p>
+                                    <button class="btn btn-outline">View Schedule</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Tracking Tab -->
+                        <div class="tab-panel" id="parent-progress">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                                <h3>Student Progress Tracking</h3>
+                                <button class="btn btn-outline">Download Report</button>
+                            </div>
+
+                            <!-- Progress Overview -->
+                            <div class="form-container mb-3">
+                                <h4>Overall Progress</h4>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+                                    <div class="text-center">
+                                        <div class="progress-circle" style="--progress: 75; margin: 0 auto 1rem;">
+                                            <div class="progress-text">75%</div>
+                                        </div>
+                                        <div style="color: #666;">Behavior Goals</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="progress-circle" style="--progress: 82; margin: 0 auto 1rem;">
+                                            <div class="progress-text">82%</div>
+                                        </div>
+                                        <div style="color: #666;">Academic Goals</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="progress-circle" style="--progress: 68; margin: 0 auto 1rem;">
+                                            <div class="progress-text">68%</div>
+                                        </div>
+                                        <div style="color: #666;">Social Skills</div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h5>Recent Insights</h5>
+                                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                            <span style="color: var(--success-green);">✅</span>
+                                            <span>Strong improvement in focus and attention during lessons</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                            <span style="color: var(--success-green);">✅</span>
+                                            <span>Excellent peer relationships and cooperation</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                            <span style="color: var(--warning-orange);">⚠️</span>
+                                            <span>Continue working on self-regulation strategies in math class</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Current Goals -->
+                            <h4>Current Goals & Milestones</h4>
+                            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                <div class="form-container">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                        <h5 style="margin: 0;">Improve Math Class Focus</h5>
+                                        <span style="font-weight: 600;">75% Complete</span>
+                                    </div>
+                                    <p>Use movement breaks and visual aids to maintain attention during math lessons for a full week.</p>
+                                    <div style="background: #e0e0e0; height: 6px; border-radius: 3px; margin-bottom: 1rem;">
+                                        <div style="background: var(--success-green); height: 100%; width: 75%; border-radius: 3px;"></div>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; color: #666; font-size: 0.9rem;">
+                                        <span>Target Date: Feb 15, 2024</span>
+                                        <span>Next Review: Jan 25, 2024</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-container">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                        <h5 style="margin: 0;">Develop Peer Communication Skills</h5>
+                                        <span style="font-weight: 600;">85% Complete</span>
+                                    </div>
+                                    <p>Practice active listening and conflict resolution skills with peer buddy during structured activities.</p>
+                                    <div style="background: #e0e0e0; height: 6px; border-radius: 3px; margin-bottom: 1rem;">
+                                        <div style="background: var(--success-green); height: 100%; width: 85%; border-radius: 3px;"></div>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; color: #666; font-size: 0.9rem;">
+                                        <span>Target Date: Jan 30, 2024</span>
+                                        <span>Next Review: Jan 22, 2024</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-container">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                        <h5 style="margin: 0;">Complete Homework Independently</h5>
+                                        <span style="font-weight: 600;">60% Complete</span>
+                                    </div>
+                                    <p>Use organizational tools and time management strategies to complete assignments without prompting.</p>
+                                    <div style="background: #e0e0e0; height: 6px; border-radius: 3px; margin-bottom: 1rem;">
+                                        <div style="background: var(--warning-orange); height: 100%; width: 60%; border-radius: 3px;"></div>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; color: #666; font-size: 0.9rem;">
+                                        <span>Target Date: Mar 1, 2024</span>
+                                        <span>Next Review: Feb 1, 2024</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Modals -->
+        <div id="student-search-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Student Search</h3>
+                    <button class="close-btn" onclick="closeModal('student-search-modal')">&times;</button>
+                </div>
+                <div class="form-group">
+                    <input type="search" class="form-input" placeholder="Enter student name or ID..." id="student-search-input" onkeyup="searchStudents(this.value)">
+                </div>
+                <div id="modal-search-results" style="margin-top: 1rem;">
+                    <div style="color: #666; text-align: center; padding: 2rem;">Start typing to search for students...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case Review Modal for Regional Dashboard -->
+        <div id="case-review-modal" class="modal hidden">
+            <div class="modal-content" style="max-width: 800px;">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="case-modal-title">Case Review</h3>
+                    <button class="close-btn" onclick="closeModal('case-review-modal')">&times;</button>
+                </div>
+                <div id="case-modal-content"></div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="global-loading" class="modal hidden">
+            <div style="background: rgba(255,255,255,0.9); border-radius: 1rem; padding: 2rem; text-align: center;">
+                <div class="loading-spinner" style="margin: 0 auto 1rem;"></div>
+                <p id="global-loading-message">Processing...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state management
+        let currentView = 'school-dashboard';
+        let currentFormStep = 1;
+        let selectedCaseData = null;
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Simulate loading for dashboard
+            setTimeout(() => {
+                document.getElementById('dashboard-loading').classList.add('hidden');
+                document.getElementById('dashboard-content').classList.remove('hidden');
+            }, 1500);
+        });
+
+        // Navigation functions
+        function showView(viewId) {
+            // Hide all views
+            document.querySelectorAll('.interface-view').forEach(view => {
+                view.classList.remove('active');
+            });
+
+            // Show selected view
+            document.getElementById(viewId).classList.add('active');
+
+            // Update navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-view="${viewId}"]`).classList.add('active');
+
+            currentView = viewId;
+
+            // Simulate loading for some views
+            if (viewId === 'case-management' || viewId === 'regional-dashboard') {
+                showGlobalLoading('Loading data...');
+                setTimeout(() => hideGlobalLoading(), 800);
+            }
+        }
+
+        // Tab management
+        function showTab(tabId) {
+            // Get the parent tab container
+            const tabContainer = event.target.closest('.tab-container');
+
+            // Hide all tab panels in this container
+            tabContainer.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+
+            // Remove active class from all tab buttons in this container
+            tabContainer.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+
+            // Show selected tab panel
+            tabContainer.querySelector(`#${tabId}`).classList.add('active');
+
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
+        // Form step navigation
+        function nextStep() {
+            if (currentFormStep < 6) {
+                // Hide current step
+                document.getElementById(`step-${currentFormStep}`).classList.remove('active');
+                document.getElementById(`step-${currentFormStep}-label`).classList.remove('text-primary');
+
+                // Show next step
+                currentFormStep++;
+                document.getElementById(`step-${currentFormStep}`).classList.add('active');
+                document.getElementById(`step-${currentFormStep}-label`).classList.add('text-primary');
+
+                // Update progress bar
+                const progress = (currentFormStep / 6) * 100;
+                document.getElementById('form-progress').style.width = `${progress}%`;
+
+                // Update step indicator
+                document.getElementById('step-indicator').textContent = `Step ${currentFormStep} of 6`;
+
+                // Update buttons
+                document.getElementById('prev-btn').disabled = false;
+                if (currentFormStep === 6) {
+                    document.getElementById('next-btn').innerHTML = '✓ Submit Incident';
+                    document.getElementById('next-btn').onclick = submitIncident;
+                }
+            }
+        }
+
+        function previousStep() {
+            if (currentFormStep > 1) {
+                // Hide current step
+                document.getElementById(`step-${currentFormStep}`).classList.remove('active');
+                document.getElementById(`step-${currentFormStep}-label`).classList.remove('text-primary');
+
+                // Show previous step
+                currentFormStep--;
+                document.getElementById(`step-${currentFormStep}`).classList.add('active');
+                document.getElementById(`step-${currentFormStep}-label`).classList.add('text-primary');
+
+                // Update progress bar
+                const progress = (currentFormStep / 6) * 100;
+                document.getElementById('form-progress').style.width = `${progress}%`;
+
+                // Update step indicator
+                document.getElementById('step-indicator').textContent = `Step ${currentFormStep} of 6`;
+
+                // Update buttons
+                if (currentFormStep === 1) {
+                    document.getElementById('prev-btn').disabled = true;
+                }
+                document.getElementById('next-btn').innerHTML = 'Next →';
+                document.getElementById('next-btn').onclick = nextStep;
+            }
+        }
+
+        function submitIncident() {
+            showGlobalLoading('Submitting incident report...');
+            setTimeout(() => {
+                hideGlobalLoading();
+                alert('Incident report submitted successfully!');
+                showView('school-dashboard');
+                resetForm();
+            }, 2000);
+        }
+
+        function resetForm() {
+            currentFormStep = 1;
+            document.querySelectorAll('.form-step').forEach(step => step.classList.remove('active'));
+            document.getElementById('step-1').classList.add('active');
+            document.getElementById('form-progress').style.width = '16.67%';
+            document.getElementById('step-indicator').textContent = 'Step 1 of 6';
+            document.getElementById('prev-btn').disabled = true;
+            document.getElementById('next-btn').innerHTML = 'Next →';
+            document.getElementById('next-btn').onclick = nextStep;
+        }
+
+        // Student search functionality
+        function showStudentSearch() {
+            document.getElementById('student-search-modal').classList.remove('hidden');
+            document.getElementById('student-search-input').focus();
+        }
+
+        function performStudentSearch(searchTerm) {
+            const resultsDiv = document.getElementById('search-results');
+
+            if (searchTerm.length < 2) {
+                resultsDiv.innerHTML = '';
+                return;
+            }
+
+            // Simulate search results
+            const mockResults = [
+                { id: 1, name: 'Sarah Johnson', studentId: '2024001', grade: '8' },
+                { id: 2, name: 'Michael Chen', studentId: '2024002', grade: '9' },
+                { id: 3, name: 'Emily Davis', studentId: '2024003', grade: '7' }
+            ].filter(student =>
+                student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                student.studentId.includes(searchTerm)
+            );
+
+            if (mockResults.length > 0) {
+                resultsDiv.innerHTML = mockResults.map(student => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: white; border-radius: 0.25rem; margin-bottom: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: pointer;" onclick="selectStudent('${student.id}')">
+                        <div>
+                            <div style="font-weight: 600;">${student.name}</div>
+                            <div style="font-size: 0.9rem; color: #666;">ID: ${student.studentId}</div>
+                        </div>
+                        <span class="badge badge-info">Grade ${student.grade}</span>
+                    </div>
+                `).join('');
+            } else {
+                resultsDiv.innerHTML = '<div style="text-align: center; color: #666; padding: 2rem;">No students found</div>';
+            }
+        }
+
+        function searchStudents(searchTerm) {
+            const resultsDiv = document.getElementById('modal-search-results');
+
+            if (searchTerm.length < 2) {
+                resultsDiv.innerHTML = '<div style="color: #666; text-align: center; padding: 2rem;">Start typing to search for students...</div>';
+                return;
+            }
+
+            performStudentSearch(searchTerm);
+        }
+
+        function selectStudent(studentId) {
+            alert(`Selected student ID: ${studentId}`);
+            closeModal('student-search-modal');
+        }
+
+        // Regional dashboard case management
+        function selectCase(caseId) {
+            const caseData = {
+                'case001': {
+                    id: 'BRC-2024-001',
+                    title: 'Suspension Review Request',
+                    studentName: 'Sarah Johnson',
+                    schoolName: 'Brisbane High School',
+                    priority: 'High',
+                    submittedDate: 'Jan 15, 2024',
+                    description: 'Parent requesting review of 3-day suspension decision for classroom disruption incident.',
+                    status: 'Under Review'
+                }
+            };
+
+            selectedCaseData = caseData[caseId];
+
+            if (selectedCaseData) {
+                document.getElementById('case-review-content').innerHTML = `
+                    <div>
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="margin: 0 0 0.5rem 0; color: var(--qld-navy);">${selectedCaseData.title}</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.9rem; color: #666;">
+                                <div><strong>Case ID:</strong> ${selectedCaseData.id}</div>
+                                <div><strong>Priority:</strong> <span class="badge badge-danger">${selectedCaseData.priority}</span></div>
+                                <div><strong>Student:</strong> ${selectedCaseData.studentName}</div>
+                                <div><strong>School:</strong> ${selectedCaseData.schoolName}</div>
+                                <div><strong>Submitted:</strong> ${selectedCaseData.submittedDate}</div>
+                                <div><strong>Status:</strong> <span class="badge badge-warning">${selectedCaseData.status}</span></div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 2rem;">
+                            <h5>Case Description</h5>
+                            <p>${selectedCaseData.description}</p>
+                        </div>
+
+                        <div style="margin-bottom: 2rem;">
+                            <h5>Decision Actions</h5>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                                <button class="btn btn-success" onclick="approveCase()">✓ Approve</button>
+                                <button class="btn btn-outline" onclick="requestMoreInfo()">ℹ️ Request Info</button>
+                                <button class="btn btn-warning" onclick="escalateCase()">↗️ Escalate</button>
+                                <button class="btn btn-danger" onclick="rejectCase()">✕ Reject</button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="form-label">Decision Notes</label>
+                            <textarea class="form-textarea" rows="3" placeholder="Add notes about your decision..."></textarea>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function approveCase() {
+            if (selectedCaseData) {
+                showGlobalLoading('Processing case approval...');
+                setTimeout(() => {
+                    hideGlobalLoading();
+                    alert(`Case ${selectedCaseData.id} has been approved.`);
+                }, 1500);
+            }
+        }
+
+        function requestMoreInfo() {
+            if (selectedCaseData) {
+                alert(`Information request sent for case ${selectedCaseData.id}`);
+            }
+        }
+
+        function escalateCase() {
+            if (selectedCaseData) {
+                alert(`Case ${selectedCaseData.id} has been escalated to the next level.`);
+            }
+        }
+
+        function rejectCase() {
+            if (selectedCaseData) {
+                if (confirm(`Are you sure you want to reject case ${selectedCaseData.id}?`)) {
+                    showGlobalLoading('Processing case rejection...');
+                    setTimeout(() => {
+                        hideGlobalLoading();
+                        alert(`Case ${selectedCaseData.id} has been rejected.`);
+                    }, 1500);
+                }
+            }
+        }
+
+        // Modal management
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        function showGlobalLoading(message = 'Loading...') {
+            document.getElementById('global-loading-message').textContent = message;
+            document.getElementById('global-loading').classList.remove('hidden');
+        }
+
+        function hideGlobalLoading() {
+            document.getElementById('global-loading').classList.add('hidden');
+        }
+
+        // Add event listeners for navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navigation event listeners
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const viewId = this.getAttribute('data-view');
+                    if (viewId) {
+                        showView(viewId);
+                    }
+                });
+            });
+
+            // Close modals when clicking outside
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('modal')) {
+                    e.target.classList.add('hidden');
+                }
+            });
+        });
+
+        // Demo functions for interactive elements
+        function handleQuickCheckin() {
+            alert('Quick check-in feature would open a simple form for parents to communicate with teachers.');
+        }
+
+        function handleRequestMeeting() {
+            alert('Meeting request form would open allowing parents to schedule conferences with school staff.');
+        }
+
+        function handleNewMessage() {
+            alert('New message composer would open allowing parents to send messages to teachers or administrators.');
+        }
+
+        function handleNewAppeal() {
+            alert('Appeals process form would open with guided steps for submitting a formal appeal.');
+        }
+
+        function handleDownloadProgress() {
+            alert('Progress report would be generated and downloaded as a PDF.');
+        }
+
+        // Simulate some dynamic content updates
+        setInterval(() => {
+            const timeElements = document.querySelectorAll('.time-display');
+            const now = new Date();
+            timeElements.forEach(el => {
+                el.textContent = now.toLocaleTimeString();
+            });
+        }, 1000);
+    </script>
+</body>
+</html>
