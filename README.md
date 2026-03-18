@@ -1,18 +1,51 @@
-# Salesforce DX Project: Next Steps
+# Salesforce Licensing Application Management System
 
-Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
+This project contains the Salesforce metadata for the Licensing Application Management System using a configuration-first approach.
 
-## How Do You Plan to Deploy Your Changes?
+## Overview
 
-Do you want to deploy a set of changes, or create a self-contained application? Choose a [development model](https://developer.salesforce.com/tools/vscode/en/user-guide/development-models).
+The system enables Licensing Officers (LO) to process email-submitted applications and route them for approval to Approving Officers (AO). Upon approval, the system automatically generates certificates and sends them to applicants.
 
-## Configure Your Salesforce DX Project
+## Key Features
 
-The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
+- **Application Management**: Custom Application__c object with comprehensive field tracking
+- **Role-based Security**: Permission sets for Licensing Officers and Approving Officers
+- **Approval Workflow**: Single-level approval process (LO → AO)
+- **Document Management**: File upload capabilities for email approvals and company profiles
+- **Certificate Generation**: Automated certificate creation with registration numbers
+- **Email Integration**: Automated certificate distribution to applicants
 
-## Read All About It
+## Project Structure
 
-- [Salesforce Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
-- [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+- `force-app/main/default/objects/` - Custom objects and their metadata
+- `force-app/main/default/permissionsets/` - Permission sets for user access
+- `force-app/main/default/layouts/` - Page layouts
+- `manifest/` - Package manifests for deployment
+
+## Deployment
+
+Use the Salesforce CLI to deploy this metadata to your org:
+
+```bash
+sf project deploy start --manifest manifest/package.xml
+```
+
+## Configuration Approach
+
+This solution prioritizes declarative configuration over custom code:
+
+- **Custom Objects**: Application__c and Company_Profile__c
+- **Security Model**: Permission sets (never modify standard profiles)
+- **Validation Rules**: Data integrity enforcement
+- **List Views**: User-friendly data access
+- **Page Layouts**: Optimized user experience
+
+## Custom Development Justification
+
+Custom Apex code is only used where declarative solutions are insufficient:
+
+1. **PDF Certificate Generation**: Complex document formatting requires custom code
+2. **Registration Number Generation**: Unique identifier logic
+3. **Email Integration**: Advanced email templating and delivery
+
+All other functionality uses Salesforce's declarative features (Flows, Process Builder, Validation Rules, etc.).

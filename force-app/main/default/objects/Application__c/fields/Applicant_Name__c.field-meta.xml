@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Applicant_Name__c</fullName>
+    <label>Applicant Name</label>
+    <type>Text</type>
+    <length>255</length>
+    <required>true</required>
+    <unique>false</unique>
+    <externalId>false</externalId>
+    <description>Full name of the person submitting the application</description>
+    <inlineHelpText>Enter the full legal name of the applicant as it appears on official documents</inlineHelpText>
+</CustomField>
