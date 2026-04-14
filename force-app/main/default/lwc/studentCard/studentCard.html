@@ -1,0 +1,134 @@
+<template>
+    <!-- Student Card Container -->
+    <article class={cardCssClass}
+             role="button"
+             tabindex="0"
+             onclick={handleCardClick}
+             onkeydown={handleCardClick}
+             aria-label={displayName}>
+
+        <!-- Loading Spinner -->
+        <template lwc:if={isLoading}>
+            <div class="slds-spinner_container slds-is-relative">
+                <div role="status" class="slds-spinner slds-spinner_small slds-spinner_brand">
+                    <span class="slds-assistive-text">Loading student information</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Error State -->
+        <template lwc:if={hasError}>
+            <div class="slds-notify slds-notify_alert slds-alert_error" role="alert">
+                <span class="slds-assistive-text">Error</span>
+                <h2 class="slds-text-heading_small">
+                    <lightning-icon icon-name="utility:error"
+                                   alternative-text="Error"
+                                   size="x-small"
+                                   class="slds-m-right_x-small"></lightning-icon>
+                    {errorMessage}
+                </h2>
+            </div>
+        </template>
+
+        <!-- Main Card Content -->
+        <template lwc:if={hasError}>
+            <template lwc:else>
+                <!-- Card Header -->
+                <div class="slds-card__header slds-grid">
+                    <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                        <div class="slds-media__figure">
+                            <lightning-icon icon-name="custom:custom63"
+                                           alternative-text="Student"
+                                           size="medium"
+                                           class="student-avatar"></lightning-icon>
+                        </div>
+                        <div class="slds-media__body">
+                            <h2 class="slds-card__header-title slds-text-heading_medium">
+                                <span class="slds-text-color_default student-name"
+                                      title={displayName}>
+                                    {displayName}
+                                </span>
+                            </h2>
+                        </div>
+                    </header>
+                    <div class="slds-no-flex">
+                        <lightning-button-icon icon-name="utility:refresh"
+                                              alternative-text="Refresh student data"
+                                              title="Refresh"
+                                              onclick={handleRefresh}
+                                              variant="border-filled"
+                                              size="small">
+                        </lightning-button-icon>
+                    </div>
+                </div>
+
+                <!-- Card Body -->
+                <div class="slds-card__body slds-card__body_inner">
+                    <div class="slds-grid slds-wrap slds-gutters">
+
+                        <!-- Student ID Section -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-2">
+                            <div class="student-info-item slds-p-vertical_x-small">
+                                <div class="slds-form-element__label slds-text-body_small slds-text-color_weak">
+                                    <lightning-icon icon-name="utility:identity"
+                                                   alternative-text="Student ID"
+                                                   size="xx-small"
+                                                   class="slds-m-right_xx-small"></lightning-icon>
+                                    Student ID
+                                </div>
+                                <div class="slds-form-element__control">
+                                    <span class="slds-text-body_regular student-id"
+                                          title={formattedStudentId}>
+                                        {formattedStudentId}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Email Section -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-2">
+                            <div class="student-info-item slds-p-vertical_x-small">
+                                <div class="slds-form-element__label slds-text-body_small slds-text-color_weak">
+                                    <lightning-icon icon-name="utility:email"
+                                                   alternative-text="Email"
+                                                   size="xx-small"
+                                                   class="slds-m-right_xx-small"></lightning-icon>
+                                    Email Address
+                                </div>
+                                <div class="slds-form-element__control">
+                                    <a href={emailHref}
+                                       class="slds-text-body_regular student-email slds-text-color_default"
+                                       title={displayEmail}
+                                       tabindex="0">
+                                        {displayEmail}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Card Footer -->
+                <div class="slds-card__footer slds-text-align_right">
+                    <div class="slds-text-body_small slds-text-color_weak">
+                        Click card to select student
+                    </div>
+                </div>
+
+            </template>
+        </template>
+
+    </article>
+
+    <!-- Screen Reader Only Content -->
+    <div class="slds-assistive-text">
+        Student information card for {displayName}.
+        Student ID: {formattedStudentId}.
+        Email: {displayEmail}.
+        Click or press Enter to select this student.
+    </div>
+
+</template>

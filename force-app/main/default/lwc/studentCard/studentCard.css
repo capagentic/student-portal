@@ -1,0 +1,287 @@
+/* Student Card Component Styles */
+
+/* Main Card Container */
+.student-card {
+    background: #ffffff;
+    border-radius: 0.375rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Card Hover States */
+.student-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.student-card:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+/* Focus States for Accessibility */
+.student-card:focus,
+.student-card:focus-within {
+    outline: 2px solid #0070d2;
+    outline-offset: 2px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Error State Styling */
+.student-card.error-state {
+    border-left: 4px solid #c23934;
+    background-color: #fef7f7;
+}
+
+.student-card.error-state:hover {
+    box-shadow: 0 4px 12px rgba(194, 57, 52, 0.15);
+}
+
+/* Student Avatar Icon */
+.student-avatar {
+    background-color: #0070d2;
+    border-radius: 50%;
+    padding: 0.5rem;
+    color: white;
+}
+
+/* Student Name Styling */
+.student-name {
+    font-weight: 600;
+    font-size: 1.125rem;
+    line-height: 1.5;
+    color: #181818;
+    word-break: break-word;
+}
+
+/* Student Info Items */
+.student-info-item {
+    position: relative;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f3f3f3;
+    transition: background-color 0.2s ease;
+}
+
+.student-info-item:last-child {
+    border-bottom: none;
+}
+
+.student-info-item:hover {
+    background-color: #f8f9fa;
+    border-radius: 0.25rem;
+    margin: 0 -0.5rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+/* Student ID Styling */
+.student-id {
+    font-family: 'Courier New', Monaco, monospace;
+    font-weight: 500;
+    color: #444444;
+    background-color: #f8f9fa;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.9rem;
+}
+
+/* Student Email Styling */
+.student-email {
+    text-decoration: none;
+    color: #0070d2;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    word-break: break-all;
+}
+
+.student-email:hover,
+.student-email:focus {
+    color: #005fb2;
+    text-decoration: underline;
+}
+
+/* Loading Spinner Container */
+.student-card .slds-spinner_container {
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Card Header Enhancements */
+.student-card .slds-card__header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-bottom: 2px solid #f3f3f3;
+    padding: 1rem;
+}
+
+/* Card Body Enhancements */
+.student-card .slds-card__body {
+    padding: 1.5rem 1rem;
+}
+
+/* Card Footer Enhancements */
+.student-card .slds-card__footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #f3f3f3;
+    padding: 0.75rem 1rem;
+    font-style: italic;
+}
+
+/* Responsive Design */
+
+/* Mobile First Approach */
+@media screen and (max-width: 480px) {
+    .student-card {
+        margin: 0;
+        max-width: 100%;
+        border-radius: 0;
+    }
+
+    .student-name {
+        font-size: 1rem;
+    }
+
+    .student-card .slds-card__header,
+    .student-card .slds-card__body {
+        padding: 0.75rem;
+    }
+
+    .student-info-item {
+        padding: 0.5rem 0;
+    }
+}
+
+/* Tablet Styles */
+@media screen and (min-width: 481px) and (max-width: 768px) {
+    .student-card {
+        max-width: 350px;
+    }
+}
+
+/* Desktop Styles */
+@media screen and (min-width: 769px) {
+    .student-card {
+        max-width: 400px;
+    }
+
+    .student-card .slds-card__body {
+        padding: 1.5rem;
+    }
+}
+
+/* High DPI Display Support */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .student-card {
+        border: 0.5px solid #e8e8e8;
+    }
+}
+
+/* Dark Mode Support (Future Enhancement) */
+@media (prefers-color-scheme: dark) {
+    .student-card {
+        background: #1a1a1a;
+        color: #ffffff;
+        border-color: #444444;
+    }
+
+    .student-card .slds-card__header {
+        background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+        border-bottom-color: #444444;
+    }
+
+    .student-card .slds-card__footer {
+        background-color: #2a2a2a;
+        border-top-color: #444444;
+    }
+
+    .student-name {
+        color: #ffffff;
+    }
+
+    .student-id {
+        background-color: #2a2a2a;
+        color: #cccccc;
+    }
+
+    .student-info-item {
+        border-bottom-color: #444444;
+    }
+
+    .student-info-item:hover {
+        background-color: #2a2a2a;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .student-card {
+        box-shadow: none;
+        border: 1px solid #cccccc;
+        break-inside: avoid;
+        margin-bottom: 1rem;
+    }
+
+    .student-card .slds-card__footer {
+        display: none;
+    }
+}
+
+/* Reduced Motion Support for Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .student-card,
+    .student-card:hover,
+    .student-card:active,
+    .student-info-item,
+    .student-email {
+        transition: none;
+    }
+
+    .student-card:hover {
+        transform: none;
+    }
+}
+
+/* Focus Indicators for High Contrast Mode */
+@media (prefers-contrast: high) {
+    .student-card:focus,
+    .student-card:focus-within {
+        outline: 3px solid;
+        outline-offset: 3px;
+    }
+
+    .student-email:focus {
+        outline: 2px solid;
+        outline-offset: 1px;
+    }
+}
+
+/* Custom Animation for Loading States */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.student-card {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Icon Color Overrides for Consistency */
+.student-card lightning-icon {
+    --slds-c-icon-color-foreground-default: #0070d2;
+}
+
+.student-card .error-state lightning-icon {
+    --slds-c-icon-color-foreground-default: #c23934;
+}
